@@ -53,8 +53,16 @@
 (package! gruvbox-theme)
 (package! el-get)
 (package! zotxt)
+(package! centered-cursor-mode)
+(package! bibtex-completion
+  :recipe (:host github :repo "tmalsburg/helm-bibtex"
+           :files ("bibtex-completion.el")))
 (package! org-ref
           :recipe (:host github :repo "larandall/org-ref"
                          :branch "fix-citation-export-for-pandoc-and-org"))
 (package! toc-org)
-(package! doom-todo-ivy :recipe (:host github :repo "jsmestad/doom-todo-ivy"))
+;; (package! doom-todo-ivy :recipe (:host github :repo "jsmestad/doom-todo-ivy"))
+(package! visual-fill-column)
+(package! org-wc
+  :recipe (:host github :repo "tesujimath/org-wc"))
+(package! winum)
