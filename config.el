@@ -331,7 +331,10 @@
             (visual-fill-column-mode -1)
             (smartparens-mode 1)
             (show-smartparens-mode -1)))
-(after! org (setq org-tags-column -80))
+(after!
+
+
+  org (setq org-tags-column -80))
 (defun unfill-paragraph ()
     (interactive)
       (let ((fill-column (point-max)))
@@ -341,24 +344,180 @@
          ((eq major-mode 'LaTeX-mode)
           (LaTeX-fill-paragraph))
          (t (fill-paragraph)))))
-(after! org
+(after!
+  org
+  (defvar org-fill-by-sentences nil
+    "If non-nill fill paragraphs by sentences in org mode")
+  (setq org-fill-by-sentences t)
   (defun averys-fill-paragraph-by-sentences (&optional justify)
   "This function fills a paragraph by sentences, principally in org-mode."
   (interactive)
+  (save-excursion
   (unfill-paragraph)
   (let ((beg (max (point-min)
-                  (org-element-property :contents-begin (org-element-at-point))))
+                  (org-element-property :begin (org-element-at-point))))
         (end (min (point-max)
-                            (org-element-property :contents-end (org-element-at-point)))))
+                  (org-element-property :end (org-element-at-point))))
+        (eos nil)
+        (bos nil)
+        (isitem nil)
+        (next-s nil))
     (save-excursion
       (goto-char beg)
+      (save-excursion
+        (back-to-indentation)
+        (if (> (current-column) 1)
+            (setq indented t)
+        (forward-char)
+        (if (or (equal
+             (org-element-type (org-element-at-point))
+             'item) (> 0 (current-indentation))) (setq isitem t)))
         (while (< (point) end)
-        (org-forward-sentence)
-        (unless (>= (+ (point) 1) end)
+          (org-forward-sentence)
+          (unless (looking-back "^[ \\t]*[0-9]*\\.")
+          (setq eos (point))
+          (setq bos (line-beginning-position))
+          ;; (unless isitem
+          ;; (fill-region-as-paragraph bos (point) justify))
           (save-excursion
-            (newline-and-indent)))
-        (fill-region-as-paragraph (line-beginning-position) (point))
-        (forward-char 2)))))
+            (forward-char)
+            (org-forward-sentence)
+            (setq next-s (point)))
+          (unless (> next-s end)
+            (if isitem
+              (let* ((trailing-data                      
+	                   (delete-and-extract-region (point) (line-end-position)))
+                    (clean-data (replace-regexp-in-string "^[ \t]*" "" trailing-data)))
+		            (save-excursion
+                  (org--newline t nil t)
+                  (insert clean-data))))
+            (delete-horizontal-space)
+            (org--newline t nil t))
+          (fill-region-as-paragraph bos (point) justify)
+          (setq end  (min (point-max)
+                  (org-element-property :end (org-element-at-point))))
+          (forward-char))
+          (forward-char)))))))
+  (defun get-indent ()
+    (interactive)
+    (message (number-to-string (current-indentation))))
+  (defun get-oet ()
+    (interactive)
+    (if (equal
+         (org-element-type (org-element-at-point))
+         'item) (message "this is an item")
+      (message "Not an item")))
+ ;;   (defun org-fill-element ( justify)
+;;   "Fill element at point, when applicable.
+
+;; This function only applies to comment blocks, comments, example
+;; blocks and paragraphs.  Also, as a special case, re-align table
+;; when point is at one.
+
+;; If JUSTIFY is non-nil (interactively, with prefix argument),
+;; justify as well.  If `sentence-end-double-space' is non-nil, then
+;; period followed by one space does not end a sentence, so don't
+;; break a line there.  The variable `fill-column' controls the
+;; width for filling.
+
+;; For convenience, when point is at a plain list, an item or
+;; a footnote definition, try to fill the first paragraph within."
+;;   (with-syntax-table org-mode-transpose-word-syntax-table
+;;     ;; Move to end of line in order to get the first paragraph within
+;;     ;; a plain list or a footnote definition.
+;;     (let ((element (save-excursion (end-of-line) (org-element-at-point))))
+;;       ;; First check if point is in a blank line at the beginning of
+;;       ;; the buffer.  In that case, ignore filling.
+;;       (cl-case (org-element-type element)
+;; 	;; Use major mode filling function is source blocks.
+;; 	(src-block (org-babel-do-key-sequence-in-edit-buffer (kbd "M-q")))
+;; 	;; Align Org tables, leave table.el tables as-is.
+;; 	(table-row (org-table-align) t)
+;; 	(table
+;; 	 (when (eq (org-element-property :type element) 'org)
+;; 	   (save-excursion
+;; 	     (goto-char (org-element-property :post-affiliated element))
+;; 	     (org-table-align)))
+;; 	 t)
+;; 	(paragraph
+;; 	 ;; Paragraphs may contain `line-break' type objects.
+;;    (if org-fill-by-sentences
+;;        (averys-fill-paragraph-by-sentences)
+;; 	   (let ((beg (max (point-min)
+;; 			 (org-element-property :contents-begin element)))
+;; 	       (end (min (point-max)
+;; 			 (org-element-property :contents-end element))))
+;; 	   ;; Do nothing if point is at an affiliated keyword.
+;; 	   (if (< (line-end-position) beg) t
+;; 	     ;; Fill paragraph, taking line breaks into account.
+;; 	     (save-excursion
+;; 	       (goto-char beg)
+;; 	       (let ((cuts (list beg)))
+;; 		 (while (re-search-forward "\\\\\\\\[ \t]*\n" end t)
+;; 		   (when (eq 'line-break
+;; 			     (org-element-type
+;; 			      (save-excursion (backward-char)
+;; 					      (org-element-context))))
+;; 		     (push (point) cuts)))
+;; 		 (dolist (c (delq end cuts))
+;; 		   (fill-region-as-paragraph c end justify)
+;; 		   (setq end c))))
+;; 	     t))))
+;; 	;; Contents of `comment-block' type elements should be
+;; 	;; filled as plain text, but only if point is within block
+;; 	;; markers.
+;; 	(comment-block
+;; 	 (let* ((case-fold-search t)
+;; 		(beg (save-excursion
+;; 		       (goto-char (org-element-property :begin element))
+;; 		       (re-search-forward "^[ \t]*#\\+begin_comment" nil t)
+;; 		       (forward-line)
+;; 		       (point)))
+;; 		(end (save-excursion
+;; 		       (goto-char (org-element-property :end element))
+;; 		       (re-search-backward "^[ \t]*#\\+end_comment" nil t)
+;; 		       (line-beginning-position))))
+;; 	   (if (or (< (point) beg) (> (point) end)) t
+;; 	     (fill-region-as-paragraph
+;; 	      (save-excursion (end-of-line)
+;; 			      (re-search-backward "^[ \t]*$" beg 'move)
+;; 			      (line-beginning-position))
+;; 	      (save-excursion (beginning-of-line)
+;; 			      (re-search-forward "^[ \t]*$" end 'move)
+;; 			      (line-beginning-position))
+;; 	      justify))))
+;; 	;; Fill comments.
+;; 	(comment
+;; 	 (let ((begin (org-element-property :post-affiliated element))
+;; 	       (end (org-element-property :end element)))
+;; 	   (when (and (>= (point) begin) (<= (point) end))
+;; 	     (let ((begin (save-excursion
+;; 			    (end-of-line)
+;; 			    (if (re-search-backward "^[ \t]*#[ \t]*$" begin t)
+;; 				(progn (forward-line) (point))
+;; 			      begin)))
+;; 		   (end (save-excursion
+;; 			  (end-of-line)
+;; 			  (if (re-search-forward "^[ \t]*#[ \t]*$" end 'move)
+;; 			      (1- (line-beginning-position))
+;; 			    (skip-chars-backward " \r\t\n")
+;; 			    (line-end-position)))))
+;; 	       ;; Do not fill comments when at a blank line.
+;; 	       (when (> end begin)
+;; 		 (let ((fill-prefix
+;; 			(save-excursion
+;; 			  (beginning-of-line)
+;; 			  (looking-at "[ \t]*#")
+;; 			  (let ((comment-prefix (match-string 0)))
+;; 			    (goto-char (match-end 0))
+;; 			    (if (looking-at adaptive-fill-regexp)
+;; 				(concat comment-prefix (match-string 0))
+;; 			      (concat comment-prefix " "))))))
+;; 		   (save-excursion
+;; 		     (fill-region-as-paragraph begin end justify))))))
+;; 	   t))
+;; 	;; Ignore every other element.
+;; 	(otherwise t)))))
 (defun avery-fill-paragraph (&optional justify region)
   "Fill element at point, when applicable.
 
