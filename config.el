@@ -2,7 +2,15 @@
 ;;;; Preliminaries
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
+(require 'server)
+(unless server-process (server-start))
+(defun wrap-obsolete (orig-fn &rest args)
+  (let ((args_ (if (= (length args) 2)
+                   (append args (list "0"))
+                 args)))
+    (apply orig-fn args_)))
 
+(advice-add 'define-obsolete-function-alias :around #'wrap-obsolete)
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -20,25 +28,33 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 (setq doom-font (font-spec :family "JetBrains Mono"
-                           :size (if (and (string= system-type "gnu/linux")
-                                          (> (display-pixel-width) 1921))
-                           24
-                           14)))
+                           :size (if  (and (string= system-type "gnu/linux")
+                                           (string= system-name "avery-imac"))
+                                     (if (and
+                                          (> (display-pixel-width) 1921)
+                                          (> (display-pixel-height) 1081))
+                                         24
+                                       16)
+                                   14)))
+
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-opera)
+(setq doom-theme 'gruvbox-dark-hard)
+
+;;; Centered Cursor
+(setq global-centered-cursor-mode t)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/GDrive/org/")
-(setq deft-directory "~/GDrive/deft/")
+(setq org-directory "~/Dropbox/org/")
+(setq deft-directory "~/Dropbox/deft/")
 (after! org
-  (add-to-list 'org-agenda-files "~/GDrive/deft/")
-  (add-to-list 'org-agenda-files "~/GDrive/Essays/Toward_a_principled_pluralism/notes/")
-  (add-to-list 'org-agenda-files "~/GDrive/Essays/Toward_a_principled_pluralism/logs/")
-  (add-to-list 'org-agenda-files "~/GDrive/Essays/Toward_a_principled_pluralism/")
+  (add-to-list 'org-agenda-files "~/Dropbox/deft/")
+  (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/notes/")
+  (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/logs/")
+  (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/")
   )
 (after! org
   (add-to-list 'org-todo-keywords '(sequence
@@ -57,7 +73,7 @@
   )
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type 'relative)
+(setq display-line-numbers-type 'absolute)
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -77,24 +93,26 @@
 ;; they are implemented.
 ;;;; STRT Convert config to doom syntax
 ;;;; STRT Reorganize config to make navigating easier
+;;;; Ace window config
+(setq aw-keys '(?y ?h ?e ?a ?t ?n ?r ?r ?p))
 ;;;; Winum mode config
-(use-package! winum
-  :commands (winum-mode)
-  :config
-  (winum-mode))
-(map!
- :leader
- "RET" #'jump-to-register
- "1" #'winum-select-window-1
- "2" #'winum-select-window-2
- "3" #'winum-select-window-3
- "4" #'winum-select-window-4
- "5" #'winum-select-window-5
- "6" #'winum-select-window-6
- "7" #'winum-select-window-7
- "8" #'winum-select-window-8
- "9" #'winum-select-window-9
- "0" #'winum-select-window-0-or-10)
+;; (use-package! winum
+;;   :commands (winum-mode)
+;;   :config
+;;   (winum-mode))
+;; (map!
+;;  :leader
+;;  "RET" #'jump-to-register
+;;  "1" #'winum-select-window-1
+;;  "2" #'winum-select-window-2
+;;  "3" #'winum-select-window-3
+;;  "4" #'winum-select-window-4
+;;  "5" #'winum-select-window-5
+;;  "6" #'winum-select-window-6
+;;  "7" #'winum-select-window-7
+;;  "8" #'winum-select-window-8
+;;  "9" #'winum-select-window-9
+;;  "0" #'winum-select-window-0-or-10)
 ;;;; hl-todo config
 (after! hl-todo
   (setq hl-todo-keyword-faces
@@ -125,6 +143,7 @@
  :nvm
  "s" #'evil-avy-goto-char-2)
 (map! :map evil-normal-state-map
+      "zs" #'avery-fill-paragraph
       "zq" #'unfill-paragraph)
 (map! :after evil-org
       :map evil-org-mode-map
@@ -272,7 +291,7 @@
           ("[c]"
            ("cite"))
           ("[tc]"
-           ("citet" "textcite" "textcites"))
+ ("citet" "textcite" "textcites"))
           ("[pc]"
            ("citep" "parencite" "parencites"))
           ("[ct]"
@@ -385,7 +404,7 @@
             (setq next-s (point)))
           (unless (> next-s end)
             (if isitem
-              (let* ((trailing-data                      
+              (let* ((trailing-data
 	                   (delete-and-extract-region (point) (line-end-position)))
                     (clean-data (replace-regexp-in-string "^[ \t]*" "" trailing-data)))
 		            (save-excursion
@@ -407,6 +426,7 @@
          (org-element-type (org-element-at-point))
          'item) (message "this is an item")
       (message "Not an item")))
+
  ;;   (defun org-fill-element ( justify)
 ;;   "Fill element at point, when applicable.
 
@@ -613,7 +633,7 @@ filling the current element."
   :commands (org-clock-in org-clock-out org-clocking-buffer))
 (after! org
   (defvar avery_writinglog nil)
-  (setq avery_writinglog "~/GDrive/Essays/Toward_a_principled_pluralism/logs/Writinglog.csv")
+  (setq avery_writinglog "~/Dropbox/Essays/Toward_a_principled_pluralism/logs/Writinglog.csv")
   (defvar pomodoro-buffer nil)
   (defun my-start-writing-pomodoro ()
     (interactive)
@@ -673,13 +693,13 @@ filling the current element."
 
   ;; (setq org-gcal-client-id "361276232754-eqa9218klpehsc6kf48a8q0loeeam1bk.apps.googleusercontent.com"
   ;;       org-gcal-client-secret "KkeTt-S1iBxrumxTVdxCLWTB"
-  ;;       org-gcal-file-alist '(("l.avery.randall@gmail.com" .  "~/GDrive/Calendars/Avery.org")
+  ;;       org-gcal-file-alist '(("l.avery.randall@gmail.com" .  "~/Dropbox/Calendars/Avery.org")
   ;;                             ("q87rk33v9ctqnja35sp5bngd08@group.calendar.google.com"
-  ;;                              .  "~/GDrive/Calendars/MelissaPCC.org")
-  ;;                             ("melissa.wolfang@gmail.com" . "~/GDrive/Calendars/Melissa.org")
-  ;;                             ("lttoh6g659iiutgc555h3lcveo@group.calendar.google.com" . "~/GDrive/Calendars/Coparent.org")
-  ;;                             ("mariaameliad@gmail.com" . "~/GDrive/Calendars/Maria.org")
-  ;;                             ("leonard.a.randall@gmail.com" . "~/GDrive/Calendars/bname.org")))
+  ;;                              .  "~/Dropbox/Calendars/MelissaPCC.org")
+  ;;                             ("melissa.wolfang@gmail.com" . "~/Dropbox/Calendars/Melissa.org")
+  ;;                             ("lttoh6g659iiutgc555h3lcveo@group.calendar.google.com" . "~/Dropbox/Calendars/Coparent.org")
+  ;;                             ("mariaameliad@gmail.com" . "~/Dropbox/Calendars/Maria.org")
+  ;;                             ("leonard.a.randall@gmail.com" . "~/Dropbox/Calendars/bname.org")))
   ;; (defun internet-up-p (&optional host)
   ;;   (= 0 (call-process "ping" nil nil nil "-c" "1" "-W" "1"
   ;;                      (if host host "www.google.com"))))
@@ -687,7 +707,7 @@ filling the current element."
   ;;                                             (org-gcal-sync))))
   ;; (remove-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
   ;; ;; (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync)))
-  ;; (remove-hook 'org-capture-after-finalize-hook (lambda () (if (string-equal (file-name-directory (buffer-file-name (buffer-base-buffer))) (expand-file-name "~/GDrive/Calendars/"))
+  ;; (remove-hook 'org-capture-after-finalize-hook (lambda () (if (string-equal (file-name-directory (buffer-file-name (buffer-base-buffer))) (expand-file-name "~/Dropbox/Calendars/"))
   ;;                                                           (org-gcal-post-at-point))))
 ;;;;; DONE Org Capture templates
 ;;;;; Capture frame
@@ -721,24 +741,24 @@ filling the current element."
            "\n\n%? " :clock-in :clock-keep))
 ;;;;;; Day Sheet
   (add-to-list 'org-capture-templates
-               '("d" "Day Sheet" entry (file+datetree "~/GDrive/Professional/GMD/Day-Sheets.org")
+               '("d" "Day Sheet" entry (file+datetree "~/Dropbox/Professional/GMD/Day-Sheets.org")
                  "* Day Sheet %<%A %m/%d/%Y> :ignore:\n:PROPERTIES:\n:EXPORT_FILE_NAME: Sheets/%<%m-%d-%Y>\n:END:
 Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site:\n\nNotes:" :jump-to-captured t))
 ;;;;;; Letter
   (add-to-list 'org-capture-templates
-               '("l" "letter" entry (file+datetree "~/GDrive/org/Letters.org")
+               '("l" "letter" entry (file+datetree "~/Dropbox/org/Letters.org")
                  "* Letter to %^{Addressee} %<%A %m/%d/%Y> :ignore:\n:PROPERTIES:\n:EXPORT_FILE_NAME: Letters/%\\1-%<%Y-%m-%d>\n:END:\n%?" :jump-to-captured t))
 ;;;;;; Journal
   (add-to-list 'org-capture-templates
-               '("j" "Journal" plain (file+datetree "~/GDrive/Personal/Journals/Journal.org")
+               '("j" "Journal" plain (file+datetree "~/Dropbox/Personal/Journals/Journal.org")
                  "%?\nEntered on %U\n " :jump-to-captured t))
 ;;;;;;  Avery todo
   (add-to-list 'org-capture-templates
-               '("a" "Avery TODO" entry (file+olp "~/GDrive/Professional/GMD/Avery-Todo.org" "Tasks" "Current")
+               '("a" "Avery TODO" entry (file+olp "~/Dropbox/Professional/GMD/Avery-Todo.org" "Tasks" "Current")
                  "* TODO %? \n%i\n %a"))
 
   ;; (add-to-list 'org-capture-templates
-  ;;              '(("p" "Personal TODO" entry (file+olp "~/GDrive/Agendas/Personal.org" "Inbox")
+  ;;              '(("p" "Personal TODO" entry (file+olp "~/Dropbox/Agendas/Personal.org" "Inbox")
   ;;                "* TODO %? \n%i\n")))
 ;;;;;;  bibtex
   (add-to-list 'org-capture-templates
@@ -747,7 +767,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
 ;;;;;;  reading
   ;; (add-to-list 'org-capture-templates
   ;;       '("u" "Reading" entry
-  ;;         (file+headline "~/GDrive/P/Bib/Readinglist.org" "RLIST Inbox")
+  ;;         (file+headline "~/Dropbox/P/Bib/Readinglist.org" "RLIST Inbox")
   ;;         "** %^{Todo state|READ|FIND|PRINT|NOTES} [#%^{Priority|A|B|C}] New Reading Entry %? %^{BIB_TITLE}p %^{BIB_AUTHOR}p %^{BIB_EDITOR}p %^{BIB_YEAR}p %^{CUSTOM_ID}p %^g
   ;;       :PROPERTIES:
   ;;       :BIB_BTYPE: %^{Entry type|book|article|inbook|bookinbook|incollection|suppbook|phdthesis|proceedings|inproceedings|booklet}
@@ -757,10 +777,10 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
 ;;;;; Export
 
 ;;;;;; async export
-(setq org-export-async-init-file "/Users/avery/GDrive/Resources/dotfiles/lisp/org-setup.el")
+(setq org-export-async-init-file "/Users/avery/Dropbox/Resources/dotfiles/lisp/org-setup.el")
 ;;;;;; auto export
-(setq current-notes-file "~/GDrive/Writing Projects/Property Project/010_Property-Notes.org")
-(setq current-project-file "~/GDrive/Writing Projects/Property Project/100_Property_Project.org")
+(setq current-notes-file "~/Dropbox/Writing Projects/Property Project/010_Property-Notes.org")
+(setq current-project-file "~/Dropbox/Writing Projects/Property Project/100_Property_Project.org")
 
 (setq avery-export-function 'org-latex-export-to-latex)
 (defun avery-export-file-async (&optional file async)
@@ -816,33 +836,33 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
   :init
 (setq org-publish-project-alist
       '(("Property"
-         :base-directory "~/GDrive/Writing Projects/Property Project/"
+         :base-directory "~/Dropbox/Writing Projects/Property Project/"
          :base-extension "org"
          :recursive t
-         :publishing-directory "~/GDrive/Writing Projects/Property Project/Output/"
+         :publishing-directory "~/Dropbox/Writing Projects/Property Project/Output/"
          :publishing-function org-latex-publish-to-pdf
          :exclude "\(Output/.*\)\|\(todo.org\)")
         ("Journals"
-         :base-directory "~/GDrive/Personal/Journals/"
+         :base-directory "~/Dropbox/Personal/Journals/"
          :base-extension "org"
-         :publishing-directory "~/GDrive/Personal/Journals/Pretty/"
+         :publishing-directory "~/Dropbox/Personal/Journals/Pretty/"
          :publishing-function org-latex-publish-to-pdf)
         ("Chapters"
-         :base-directory "~/GDrive/P/Thesis/Chapters/"
+         :base-directory "~/Dropbox/P/Thesis/Chapters/"
          :base-extension "org"
-         :publishing-directory "~/GDrive/P/Thesis/Output/"
+         :publishing-directory "~/Dropbox/P/Thesis/Output/"
          :publishing-function org-latex-publish-to-pdf
          :exclude "^WorkingDraft.org")
         ("Thesis-Simple"
-         :base-directory "~/GDrive/P/Thesis/Chapters/"
+         :base-directory "~/Dropbox/P/Thesis/Chapters/"
          :base-extension "org"
-         :publishing-directory "~/GDrive/P/Thesis/Output/"
+         :publishing-directory "~/Dropbox/P/Thesis/Output/"
          :publishing-function org-latex-publish-to-pdf
          :exclude "[1-5].*")
         ("Chapter-Base"
-         :base-directory "~/GDrive/P/Thesis/Chapters/"
+         :base-directory "~/Dropbox/P/Thesis/Chapters/"
          :base-extension "org"
-         :publishing-directory "~/GDrive/P/Thesis/Chapters/"
+         :publishing-directory "~/Dropbox/P/Thesis/Chapters/"
          :publishing-function org-latex-publish-to-latex
          :exclude "^WorkingDraft.org")
         ("all"
@@ -1346,31 +1366,31 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
 (use-package! reftex
   :after (:any org latex tex-mode)
   :config
-(setq reftex-default-bibliography '("~/GDrive/Resources/bib/mybib/My-Library.bib")))
+(setq reftex-default-bibliography '("~/Dropbox/Resources/bib/mybib/My-Library.bib")))
 ;;;;; Org-reg
 (use-package! org-ref
   :after org
   :config
-  (setq org-ref-bibliography-notes "~/GDrive/zotfiles/notes.org"
-      org-ref-default-bibliography '("~/GDrive/Resources/bib/mybib/My-Library.bib")
-      org-ref-pdf-directory "~/GDrive/zotfiles/")
+  (setq org-ref-bibliography-notes "~/Dropbox/zotfiles/notes.org"
+      org-ref-default-bibliography '("~/Dropbox/Resources/bib/mybib/My-Library.bib")
+      org-ref-pdf-directory "~/Dropbox/zotfiles/")
   (setf (cdr (assoc 'org-mode bibtex-completion-format-citation-functions)) 'org-ref-format-citation))
 
 ;;;; file register
-  (set-register ?j (cons 'file "~/GDrive/Personal/Journals/Journal.org"))
-  (set-register ?c (cons 'file "~/GDrive/Writing Projects/Buddhistmoralphil.org"))
-  (set-register ?b (cons 'file "~/GDrive/Personal/Journals/Buddhism.Spirituality.org"))
-  (set-register ?r (cons 'file "~/GDrive/Writing Projects/Property Project/101_A_reasonable_pluralism.org"))
-  (set-register ?p (cons 'file "~/GDrive/Essays/An_analysis_of_private_property/An_analysis_of_private_property.tex"))
-  (set-register ?s (cons 'file "~/GDrive/Writing Projects/Poems.org"))
-  (set-register ?o (cons 'file "~/GDrive/Writing Projects/Property Project/Notes/outline.org"))
-  (set-register ?l (cons 'file "~/GDrive/P/Logs/Writinglog.csv"))
-  (set-register ?e (cons 'file "~/GDrive/Resources/dotfiles/.spacemacs"))
-  (set-register ?d (cons 'file "~/GDrive/Professional/GMD/Day-Sheets.org"))
-  (set-register ?g (cons 'file "~/GDrive/Professional/GMD/Knack-Lists.org"))
-  (set-register ?t (cons 'file "~/GDrive/Agendas/Personal.org"))
-(set-register ?n (cons 'file "~/GDrive/org/notes.org"))
-  (set-register ?w (cons 'file "~/GDrive/Writing Projects/Essay-Ideas.org"))
+  (set-register ?j (cons 'file "~/Dropbox/Personal/Journals/Journal.org"))
+  (set-register ?c (cons 'file "~/Dropbox/Writing Projects/Buddhistmoralphil.org"))
+  (set-register ?b (cons 'file "~/Dropbox/Personal/Journals/Buddhism.Spirituality.org"))
+  (set-register ?r (cons 'file "~/Dropbox/Writing Projects/Property Project/101_A_reasonable_pluralism.org"))
+  (set-register ?p (cons 'file "~/Dropbox/Essays/An_analysis_of_private_property/An_analysis_of_private_property.tex"))
+  (set-register ?s (cons 'file "~/Dropbox/Writing Projects/Poems.org"))
+  (set-register ?o (cons 'file "~/Dropbox/Writing Projects/Property Project/Notes/outline.org"))
+  (set-register ?l (cons 'file "~/Dropbox/P/Logs/Writinglog.csv"))
+  (set-register ?e (cons 'file "~/Dropbox/Resources/dotfiles/.spacemacs"))
+  (set-register ?d (cons 'file "~/Dropbox/Professional/GMD/Day-Sheets.org"))
+  (set-register ?g (cons 'file "~/Dropbox/Professional/GMD/Knack-Lists.org"))
+  (set-register ?t (cons 'file "~/Dropbox/Agendas/Personal.org"))
+(set-register ?n (cons 'file "~/Dropbox/org/notes.org"))
+  (set-register ?w (cons 'file "~/Dropbox/Writing Projects/Essay-Ideas.org"))
 ;;;; Custom functions
 ;;;;; Org-ref <==> Pandoc
   (defun avery-org-ref-to-pandoc ()
@@ -1452,9 +1472,17 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
     (insert " \"" (avery-clean-quote) "\" ")
     (fill-paragraph))
 (after! org
-  (setq org-hide-leading-stars nil
-        org-indent-mode-turns-on-hiding-stars nil)
-(setq org-superstar-headline-bullets-list '("❦" "⸿" "§" "¶")))
+  ;; (setq org-hide-leading-stars nil
+  ;;       org-indent-mode-turns-on-hiding-stars nil)
+  (setq org-superstar-headline-bullets-list '(
+                                              ;; "₽"
+                                              "№"
+                                              "§"
+                                              "¶"
+                                              "◊"
+                                              ;; "†"
+                                              "‡"
+                                              )))
 (map!
  :map evil-org-mode-map
 
@@ -1469,19 +1497,19 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
   ;; (spacemacs/set-leader-keys-for-major-mode 'org-mode "iu" 'avery-insert-quote-simple)
 ;;;; agenda files
   ;; (setq org-agenda-files
-  ;;        '("~/GDrive/Personal/Journals/Journal.org"
-  ;;        "~/GDrive/Personal/Journals/Buddhism.Spirituality.org"
-  ;;        "~/GDrive/Writing Projects/Property Project/100_Property_Project.org"
-  ;;        "~/GDrive/Writing Projects/Property Project/TODOs.org"
-  ;;        "~/GDrive/Professional/GMD/Day-Sheets.org"
-  ;;        "~/GDrive/Professional/GMD/Knack-Lists.org"
-  ;;        "~/GDrive/Agendas/Personal.org"
-  ;;        "~/GDrive/Calendars/Avery.org"
-  ;;        "~/GDrive/Calendars/Coparent.org"
-  ;;        "~/GDrive/Calendars/Maria.org"
-  ;;        "~/GDrive/Calendars/Melissa.org"
-  ;;        "~/GDrive/Calendars/MelissaPCC.org"
-  ;;        "~/GDrive/Calendars/bname.org"))
+  ;;        '("~/Dropbox/Personal/Journals/Journal.org"
+  ;;        "~/Dropbox/Personal/Journals/Buddhism.Spirituality.org"
+  ;;        "~/Dropbox/Writing Projects/Property Project/100_Property_Project.org"
+  ;;        "~/Dropbox/Writing Projects/Property Project/TODOs.org"
+  ;;        "~/Dropbox/Professional/GMD/Day-Sheets.org"
+  ;;        "~/Dropbox/Professional/GMD/Knack-Lists.org"
+  ;;        "~/Dropbox/Agendas/Personal.org"
+  ;;        "~/Dropbox/Calendars/Avery.org"
+  ;;        "~/Dropbox/Calendars/Coparent.org"
+  ;;        "~/Dropbox/Calendars/Maria.org"
+  ;;        "~/Dropbox/Calendars/Melissa.org"
+  ;;        "~/Dropbox/Calendars/MelissaPCC.org"
+  ;;        "~/Dropbox/Calendars/bname.org"))
 ;;;; org-toc
 (use-package! toc-org
   :commands (toc-org-insert-toc toc-org-mode)

@@ -1,4 +1,4 @@
-;; -*- no-byte-compile: t; -*-
+;git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
 
 ;; To install a package with Doom you must declare them here, run 'doom sync' on
@@ -58,6 +58,7 @@
   :recipe (:host github :repo "tmalsburg/helm-bibtex"
            :files ("bibtex-completion.el")))
 (package! org-ref
+          ;; :recipe (:host github :repo "jkitchen/org-ref"))
           :recipe (:host github :repo "larandall/org-ref"
                          :branch "fix-citation-export-for-pandoc-and-org"))
 (package! toc-org)
@@ -65,4 +66,4 @@
 (package! visual-fill-column)
 (package! org-wc
   :recipe (:host github :repo "tesujimath/org-wc"))
-(package! winum)
+;; (package! winum)

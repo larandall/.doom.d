@@ -1,0 +1,1 @@
+/home/avery/Dropbox/Resources/dotfiles/.doom.d

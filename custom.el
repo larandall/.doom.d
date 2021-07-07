@@ -3,13 +3,17 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#3c3836" "#fb4933" "#b8bb26" "#fabd2f" "#83a598" "#d3869b" "#8ec07c" "#ebdbb2"])
  '(custom-safe-themes
-   '("8d7684de9abb5a770fbfd72a14506d6b4add9a7d30942c6285f020d41d76e0fa" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" default))
+   '("6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "8d7684de9abb5a770fbfd72a14506d6b4add9a7d30942c6285f020d41d76e0fa" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" default))
  '(fci-rule-color "#525252")
  '(jdee-db-active-breakpoint-face-colors (cons "#000000" "#80A0C2"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#000000" "#A2BF8A"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#000000" "#3f3f3f"))
  '(objed-cursor-color "#C16069")
+ '(package-selected-packages '(org-superstar))
+ '(pdf-view-midnight-colors '("#fdf4c1" . "#1d2021"))
  '(rustic-ansi-faces
    ["#323334" "#C16069" "#A2BF8A" "#ECCC87" "#80A0C2" "#B58DAE" "#86C0D1" "#eceff4"])
  '(vc-annotate-background "#323334")
@@ -33,7 +37,8 @@
     (cons 320 "#5f4749")
     (cons 340 "#525252")
     (cons 360 "#525252")))
- '(vc-annotate-very-old-color nil))
+ '(vc-annotate-very-old-color nil)
+ '(warning-suppress-types '((emacs) (:warning))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
