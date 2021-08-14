@@ -55,8 +55,8 @@
   :recipe (:host github :repo "d12frosted/vulpea"))
 (package! org-roam-bibtex
   :recipe (:host github :repo "org-roam/org-roam-bibtex"))
-(package! tree-sitter)
-(package! tree-sitter-langs)
+;; (package! tree-sitter)
+;; (package! tree-sitter-langs)
 ;; When using org-roam via the `+roam` flag
 (unpin! org-roam)
 
