@@ -1,0 +1,12 @@
+#+PROPERTY: type %^{entry-type}
+
+- Creators :: %^{author}
+
+- Tags ::
+
+* [ ] Notes
+:PROPERTIES:
+:URL: %^{url}
+:NOTER_DOCUMENT: %^{file}
+:NOTER_PAGE:
+:END:

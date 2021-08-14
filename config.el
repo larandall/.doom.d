@@ -1,6 +1,6 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 ;;;; Preliminaries
-;; Place your private configuration here! Remember, you do not need to run 'doom
+;; Place your private configuration here!Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 (require 'server)
 (unless server-process (server-start))
@@ -41,20 +41,27 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'gruvbox-dark-hard)
+(setq doom-theme 'gruvbox-dark-medium)
 
 ;;; Centered Cursor
-(setq global-centered-cursor-mode t)
-
+(global-centered-cursor-mode 1)
+(xterm-mouse-mode 1)
+  ;; (unless (display-graphic-p)
+          (require 'evil-terminal-cursor-changer)
+          (evil-terminal-cursor-changer-activate)
+;; )
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Dropbox/org/")
-(setq deft-directory "~/Dropbox/deft/")
+(setq org-roam-directory "~/Dropbox/org/roam/")
+(setq deft-directory org-roam-directory)
 (after! org
-  (add-to-list 'org-agenda-files "~/Dropbox/deft/")
-  (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/notes/")
-  (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/logs/")
-  (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/")
+  (add-to-list 'org-agenda-files "~/Dropbox/org/roam/")
+  (add-to-list 'org-agenda-files "~/Dropbox/org/roam/references")
+  (add-to-list 'org-agenda-files "~/Dropbox/org/roam/people")
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/notes/")
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/logs/")
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/")
   )
 (after! org
   (add-to-list 'org-todo-keywords '(sequence
@@ -71,9 +78,117 @@
   (add-to-list 'org-todo-keyword-faces '("READNG" . +org-todo-active))
  (add-to-list 'org-todo-keyword-faces '("ANNOTT" . +org-todo-active))
   )
+
+(use-package! org-roam-bibtex
+  :after org-roam
+  :config
+  (require 'org-ref)
+  (require 'helm-bibtex)
+  (require 'orb-helm)
+  (require 'bibtex-completion)
+  (setq org-roam-bibtex-preformat-keywords
+   '("citekey" "date" "entry-type" "title" "url" "file" "author" "editor" "pdf?" "file" "author-or-editor" "keywords" "year"
+     "author-abbrev" "editor-abbrev" "author-or-editor-abbrev"))
+  (setq orb-process-file-keyword t
+        orb-file-field-extensions '("pdf")
+        orb-insert-interface 'helm-bibtex
+        orb-insert-generic-candidates-format 'key
+        orb-insert-link-description 'citation)
+  (org-roam-bibtex-mode)
+  (setq org-roam-capture-templates
+        '(
+          ("d" "default" plain
+         (file "~/Dropbox/Resources/dotfiles/.doom.d/templates/default.org")
+         :if-new
+         (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+         :unnarrowed t)
+          ("p" "person" plain
+         (file "~/Dropbox/Resources/dotfiles/.doom.d/templates/people.org")
+         :if-new
+         (file+head "people/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+         :unnarrowed t)
+        ("b" "bibliography reference" plain
+         (file "~/Dropbox/Resources/dotfiles/.doom.d/templates/references.org")
+         :if-new
+         (file+head "references/%<%Y%m%d%H%M%S>-${citekey}.org" "#+title: ${citekey}: ${title}\n")
+         :unnarrowed t)
+        ))
+  )
+  (map!
+   :desc "Insert org-roam link"
+   "M-C-," #'orb-insert-link
+   "M-C-a" #'org-roam-node-insert
+   )
+;;; tree sitter
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+;;; vulpea setup
+(use-package! vulpea
+  :config
+  (defun vulpea-project-p ()
+  "Return non-nil if current buffer has any todo entry.
+
+TODO entries marked as done are ignored, meaning the this
+function returns nil if current buffer contains only completed
+tasks."
+  (seq-find                                 ; (3)
+   (lambda (type)
+     (eq type 'todo))
+   (org-element-map                         ; (2)
+       (org-element-parse-buffer 'headline) ; (1)
+       'headline
+     (lambda (h)
+       (org-element-property :todo-type h)))))
+
+(defun vulpea-project-update-tag ()
+    "Update PROJECT tag in the current buffer."
+    (when (and (not (active-minibuffer-window))
+               (vulpea-buffer-p))
+      (save-excursion
+        (goto-char (point-min))
+        (let* ((tags (vulpea-buffer-tags-get))
+               (original-tags tags))
+          (if (vulpea-project-p)
+              (setq tags (cons "project" tags))
+            (setq tags (remove "project" tags)))
+          (unless (eq original-tags tags)
+            (apply #'vulpea-buffer-tags-set (seq-uniq tags)))))))
+
+(defun vulpea-buffer-p ()
+  "Return non-nil if the currently visited buffer is a note."
+  (and buffer-file-name
+       (string-prefix-p
+        (expand-file-name (file-name-as-directory org-roam-directory))
+        (file-name-directory buffer-file-name))))
+
+(defun vulpea-project-files ()
+    "Return a list of note files containing 'project' tag." ;
+    (seq-uniq
+     (seq-map
+      #'car
+      (org-roam-db-query
+       [:select [nodes:file]
+        :from tags
+        :left-join nodes
+        :on (= tags:node-id nodes:id)
+        :where (like tag (quote "%\"project\"%"))]))))
+
+(defun vulpea-agenda-files-update (&rest _)
+  "Update the value of `org-agenda-files'."
+  (setq org-agenda-files (vulpea-project-files)))
+
+(add-hook 'find-file-hook #'vulpea-project-update-tag)
+(add-hook 'before-save-hook #'vulpea-project-update-tag)
+
+(advice-add 'org-agenda :before #'vulpea-agenda-files-update)
+)
+
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type 'absolute)
+(setq display-line-numbers-type 'relative)
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -90,7 +205,7 @@
 ;; This will open documentation for it, including demos of how they are used.
 ;;
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
-;; they are implemented.
+;absolute; they are implemented.
 ;;;; STRT Convert config to doom syntax
 ;;;; STRT Reorganize config to make navigating easier
 ;;;; Ace window config
@@ -224,8 +339,6 @@
   :after (ox ox-latex))
 (use-package ox-latex
   :after ox)
-(use-package! org-ref
-  :after org)
 ;;;; DONE Outshine mode
 (use-package! outshine
   :after (outline)
@@ -248,10 +361,10 @@
 ;;   :commands
 ;;   doom/ivy-tasks)
 ;; key commands
-(map!
- :after doom-todo-ivy
- :leader
- "pt" #'ivy-magit-todos)
+;; (map!
+;;  :after doom-todo-ivy
+;;  :leader
+;;  "pt" #'ivy-magit-todos)
 ;;;; DONE Latex configurations
 (use-package! latex
   :init
@@ -1367,11 +1480,13 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
   :after (:any org latex tex-mode)
   :config
 (setq reftex-default-bibliography '("~/Dropbox/Resources/bib/mybib/My-Library.bib")))
+(setq bibtex-completion-bibliography '("~/Dropbox/Resources/bib/mybib/My-Library.bib"))
 ;;;;; Org-reg
 (use-package! org-ref
   :after org
   :config
-  (setq org-ref-bibliography-notes "~/Dropbox/zotfiles/notes.org"
+  (setq
+   ;; org-ref-bibliography-notes "~/Dropbox/zotfiles/notes.org"
       org-ref-default-bibliography '("~/Dropbox/Resources/bib/mybib/My-Library.bib")
       org-ref-pdf-directory "~/Dropbox/zotfiles/")
   (setf (cdr (assoc 'org-mode bibtex-completion-format-citation-functions)) 'org-ref-format-citation))

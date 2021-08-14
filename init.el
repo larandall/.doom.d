@@ -20,9 +20,10 @@
 
        :completion
        company           ; the ultimate code completion backend
-       ;;helm              ; the *other* search engine for love and life
+       ;; helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
-       ivy               ; a search engine for love and life
+       ;; ivy               ; a search engine for love and life
+       vertico
 
        :ui
        deft              ; notational velocity for Emacs
@@ -83,6 +84,7 @@
 
        :tools
        ;;ansible
+       biblio
        debugger          ; FIXME stepping through code, to help you add bugs
        ;;direnv
        ;;docker
@@ -96,7 +98,7 @@
        magit             ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
-       ;;pdf               ; pdf enhancements
+       pdf               ; pdf enhancements
        ;;prodigy           ; FIXME managing external services & code builders
        ;;rgb               ; creating color strings
        ;;terraform         ; infrastructure as code
@@ -139,7 +141,11 @@
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org +pretty +pandoc)               ; organize your plain life in plain text
+       (org                ; organize your plain life in plain text
+        +pretty 
+        +pandoc 
+        +noter
+        +roam2)            
        ;;perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more

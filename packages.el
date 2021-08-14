@@ -50,7 +50,22 @@
 (package! ox-pandoc)
 (package! nord-theme)
 (package! doom-themes)
+(package! pdf-tools)
+(package! vulpea
+  :recipe (:host github :repo "d12frosted/vulpea"))
+(package! org-roam-bibtex
+  :recipe (:host github :repo "org-roam/org-roam-bibtex"))
+(package! tree-sitter)
+(package! tree-sitter-langs)
+;; When using org-roam via the `+roam` flag
+(unpin! org-roam)
+
+;; When using bibtex-completion via the `biblio` module
+(unpin! bibtex-completion helm-bibtex ivy-bibtex)
 (package! gruvbox-theme)
+
+(package! evil-terminal-cursor-changer)
+(package! base16-theme)
 (package! el-get)
 (package! zotxt)
 (package! centered-cursor-mode)

@@ -3,42 +3,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#3c3836" "#fb4933" "#b8bb26" "#fabd2f" "#83a598" "#d3869b" "#8ec07c" "#ebdbb2"])
  '(custom-safe-themes
-   '("6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "8d7684de9abb5a770fbfd72a14506d6b4add9a7d30942c6285f020d41d76e0fa" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" default))
- '(fci-rule-color "#525252")
- '(jdee-db-active-breakpoint-face-colors (cons "#000000" "#80A0C2"))
- '(jdee-db-requested-breakpoint-face-colors (cons "#000000" "#A2BF8A"))
- '(jdee-db-spec-breakpoint-face-colors (cons "#000000" "#3f3f3f"))
- '(objed-cursor-color "#C16069")
- '(package-selected-packages '(org-superstar))
- '(pdf-view-midnight-colors '("#fdf4c1" . "#1d2021"))
- '(rustic-ansi-faces
-   ["#323334" "#C16069" "#A2BF8A" "#ECCC87" "#80A0C2" "#B58DAE" "#86C0D1" "#eceff4"])
- '(vc-annotate-background "#323334")
- '(vc-annotate-color-map
-   (list
-    (cons 20 "#A2BF8A")
-    (cons 40 "#bac389")
-    (cons 60 "#d3c788")
-    (cons 80 "#ECCC87")
-    (cons 100 "#e3b57e")
-    (cons 120 "#da9e75")
-    (cons 140 "#D2876D")
-    (cons 160 "#c88982")
-    (cons 180 "#be8b98")
-    (cons 200 "#B58DAE")
-    (cons 220 "#b97e97")
-    (cons 240 "#bd6f80")
-    (cons 260 "#C16069")
-    (cons 280 "#a0575e")
-    (cons 300 "#804f54")
-    (cons 320 "#5f4749")
-    (cons 340 "#525252")
-    (cons 360 "#525252")))
- '(vc-annotate-very-old-color nil)
- '(warning-suppress-types '((emacs) (:warning))))
+   '("45a8b89e995faa5c69aa79920acff5d7cb14978fbf140cdd53621b09d782edcf" "6b1abd26f3e38be1823bd151a96117b288062c6cde5253823539c6926c3bb178" "71c23fc33cb4cc385f7af702b0f73b97b6c3270b6fe99a08ad6e2ec9ff35bfc3" default))
+ '(org-agenda-files
+   '("/home/avery/Dropbox/org/roam/people/20210730204817-jonathan_haidt.org" "/home/avery/Dropbox/org/roam/people/20210731095130-evan_thompson.org" "/home/avery/Dropbox/org/roam/people/20210731095204-gabriel_marcel.org" "/home/avery/Dropbox/org/roam/people/20210801204938-bookchin_m.org" "/home/avery/Dropbox/org/roam/references/20210801190304-zylbermanpublicform2016.org" "/home/avery/Dropbox/org/roam/references/20210801202412-bookchinpostscarcityanarchism1977.org" "/home/avery/Dropbox/org/roam/references/20210801213928-bookchinnextrevolution2015.org" "/home/avery/Dropbox/org/roam/references/20210801214518-bookchinecologyfreedom2005.org" "/home/avery/Dropbox/org/roam/20210727070208-political_philosophy.org" "/home/avery/Dropbox/org/roam/20210727070256-marxism.org" "/home/avery/Dropbox/org/roam/20210727181422-private_property.org" "/home/avery/Dropbox/org/roam/20210727191705-arguments_for_private_property.org" "/home/avery/Dropbox/org/roam/20210727191836-inalienable_rights.org" "/home/avery/Dropbox/org/roam/20210727193401-reasons_for_inalienability.org" "/home/avery/Dropbox/org/roam/20210728200846-respect.org" "/home/avery/Dropbox/org/roam/20210728201023-moral_philosophy.org" "/home/avery/Dropbox/org/roam/20210728201117-political_philosophy.org" "/home/avery/Dropbox/org/roam/20210728201910-self_conscious_emotions.org" "/home/avery/Dropbox/org/roam/20210729055743-shame.org" "/home/avery/Dropbox/org/roam/20210729060353-moral_psychology.org" "/home/avery/Dropbox/org/roam/20210729061228-empirical_psychology.org" "/home/avery/Dropbox/org/roam/20210729061836-anger.org" "/home/avery/Dropbox/org/roam/20210730191924-empirical_moral_psychology.org" "/home/avery/Dropbox/org/roam/20210730192854-social_psychology.org" "/home/avery/Dropbox/org/roam/20210730193339-cognitive_psychology.org" "/home/avery/Dropbox/org/roam/20210730193503-normative_moral_psychology.org" "/home/avery/Dropbox/org/roam/20210730200550-neural_basis_of_moral_elevation_demonstrated_through_inter_subject_synchronization_of_cortical_activity_during_free_viewing.org" "/home/avery/Dropbox/org/roam/20210730215201-moral_motivation.org" "/home/avery/Dropbox/org/roam/20210730222957-private_property.org" "/home/avery/Dropbox/org/roam/20210730223320-resources.org" "/home/avery/Dropbox/org/roam/20210731081410-thompson_on_hope_and_despair.org" "/home/avery/Dropbox/org/roam/20210731082948-enacting_hope.org" "/home/avery/Dropbox/org/roam/20210731095308-hope.org" "/home/avery/Dropbox/org/roam/20210731095356-unconditioned_hope.org" "/home/avery/Dropbox/org/roam/20210731095512-despair.org" "/home/avery/Dropbox/org/roam/20210731102630-conditioned_hope.org" "/home/avery/Dropbox/org/roam/20210801210220-anarchism.org" "/home/avery/Dropbox/org/roam/20210801210253-scarcity.org" "/home/avery/Dropbox/org/roam/20210801215453-theses.org" "/home/avery/Dropbox/Essays/Toward_a_principled_pluralism/logs/Worklog.org" "/home/avery/Dropbox/Essays/Toward_a_principled_pluralism/notes/Reading_list.org" "/home/avery/Dropbox/Essays/Toward_a_principled_pluralism/notes/notes.org" "/home/avery/Dropbox/org/roam/20210727070208-political_philosophy.org" "/home/avery/Dropbox/org/roam/20210727070256-marxism.org" "/home/avery/Dropbox/org/roam/20210727181422-private_property.org" "/home/avery/Dropbox/org/roam/20210727191705-arguments_for_private_property.org" "/home/avery/Dropbox/org/roam/20210727191836-inalienable_rights.org" "/home/avery/Dropbox/org/roam/20210727193401-reasons_for_inalienability.org" "/home/avery/Dropbox/org/roam/20210728200846-respect.org" "/home/avery/Dropbox/org/roam/20210728201023-moral_philosophy.org" "/home/avery/Dropbox/org/roam/20210728201117-political_philosophy.org" "/home/avery/Dropbox/org/roam/20210728201910-self_conscious_emotions.org" "/home/avery/Dropbox/org/roam/20210729055743-shame.org" "/home/avery/Dropbox/org/roam/20210729060353-moral_psychology.org" "/home/avery/Dropbox/org/roam/20210729061228-empirical_psychology.org" "/home/avery/Dropbox/org/roam/20210729061836-anger.org" "/home/avery/Dropbox/org/roam/20210730191924-empirical_moral_psychology.org" "/home/avery/Dropbox/org/roam/20210730192854-social_psychology.org" "/home/avery/Dropbox/org/roam/20210730193339-cognitive_psychology.org" "/home/avery/Dropbox/org/roam/20210730193503-normative_moral_psychology.org" "/home/avery/Dropbox/org/roam/20210730200550-neural_basis_of_moral_elevation_demonstrated_through_inter_subject_synchronization_of_cortical_activity_during_free_viewing.org" "/home/avery/Dropbox/org/roam/20210730204817-jonathan_haidt.org" "/home/avery/Dropbox/org/roam/20210730215201-moral_motivation.org" "/home/avery/Dropbox/org/roam/20210730222957-private_property.org" "/home/avery/Dropbox/org/roam/20210730223320-resources.org" "/home/avery/Dropbox/org/roam/20210731081410-thompson_on_hope_and_despair.org" "/home/avery/Dropbox/org/roam/20210731082948-enacting_hope.org" "/home/avery/Dropbox/org/roam/20210731095130-evan_thompson.org" "/home/avery/Dropbox/org/roam/20210731095204-gabriel_marcel.org" "/home/avery/Dropbox/org/roam/20210731095308-hope.org" "/home/avery/Dropbox/org/roam/20210731095356-unconditioned_hope.org" "/home/avery/Dropbox/org/roam/20210731095512-despair.org" "/home/avery/Dropbox/org/roam/20210731102630-conditioned_hope.org" "/home/avery/Dropbox/Essays/Toward_a_principled_pluralism/logs/Worklog.org" "/home/avery/Dropbox/Essays/Toward_a_principled_pluralism/notes/Reading_list.org" "/home/avery/Dropbox/Essays/Toward_a_principled_pluralism/notes/notes.org" "/home/avery/Dropbox/deft/2020-05-16t0624.org" "/home/avery/Dropbox/deft/2020-05-21t2050.org" "/home/avery/Dropbox/deft/2020-05-21t2050_2.org" "/home/avery/Dropbox/deft/2020-05-21t2051.org" "/home/avery/Dropbox/deft/2020-05-21t2051_2.org" "/home/avery/Dropbox/deft/?.org" "/home/avery/Dropbox/org/Letters.org" "/home/avery/Dropbox/org/Reading_notes.org" "/home/avery/Dropbox/org/Recipes.org" "/home/avery/Dropbox/org/notes.org" "/home/avery/Dropbox/org/projects.org" "/home/avery/Dropbox/org/todo.org"))
+ '(package-selected-packages '(helm-bibtex))
+ '(warning-suppress-types '((org-capture-after-finalize-hook) (:warning))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
