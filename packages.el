@@ -72,11 +72,14 @@
 (package! bibtex-completion
   :recipe (:host github :repo "tmalsburg/helm-bibtex"
            :files ("bibtex-completion.el")))
-(package! org-ref
-          ;; :recipe (:host github :repo "jkitchen/org-ref"))
-          :recipe (:host github :repo "larandall/org-ref"
-                         :branch "fix-citation-export-for-pandoc-and-org"))
+ (package! org-ref
+            :recipe (:host github :repo "jkitchin/org-ref"))
+;;           :recipe (:host github :repo "larandall/org-ref"
+;;                          :branch "fix-citation-export-for-pandoc-and-org"))
 (package! toc-org)
+(package! sr-speedbar)
+(package! pretty-speedbar
+   :recipe (:host github :repo "kcyarn/pretty-speedbar"))
 ;; (package! doom-todo-ivy :recipe (:host github :repo "jsmestad/doom-todo-ivy"))
 (package! visual-fill-column)
 (package! org-wc

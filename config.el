@@ -27,7 +27,9 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-(setq doom-font (font-spec :family "JetBrains Mono"
+(setq doom-font (font-spec :family (if (string= system-type "gnu/linux")
+                                       "JetBrains Mono"
+                                     "JetBrains Mono NL")
                            :size (if  (and (string= system-type "gnu/linux")
                                            ;; (string= system-name "avery-imac")
                                            t)
@@ -96,7 +98,8 @@
         orb-file-field-extensions '("pdf")
         orb-insert-interface 'helm-bibtex
         orb-insert-generic-candidates-format 'key
-        orb-insert-link-description 'citation)
+        orb-insert-link-description 'citation-org-ref-3
+        orb-roam-ref-format 'org-ref-v3)
   (org-roam-bibtex-mode)
   (setq org-roam-capture-templates
         '(
@@ -113,7 +116,7 @@
         ("b" "bibliography reference" plain
          (file "~/Dropbox/Resources/dotfiles/.doom.d/templates/references.org")
          :if-new
-         (file+head "references/%<%Y%m%d%H%M%S>-${citekey}.org" "#+title: ${citekey}: ${title}\n")
+         (file+head "references/%<%Y%m%d%H%M%S>-${citekey}.org" "#+title: ${title} by ${author} (${date})\n")
          :unnarrowed t)
         ))
   )
@@ -1479,6 +1482,8 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
 
 ;;;; DONE Bibliography
 ;;;;; Reftex
+(use-package! pretty-speedbar)
+(setq sr-speedbar-right-side nil)
 (use-package! reftex
   :after (:any org latex tex-mode)
   :config
@@ -1551,6 +1556,29 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
            (convert-double-quotes
             (replace-regexp-in-string "“\\|”" "\"" convert-single-quotes)))
       (replace-regexp-in-string "" "" convert-double-quotes))))
+  (defun avery-clean-quote2 ()
+    (interactive)
+    (with-temp-buffer
+      (evil-paste-after 1)
+       (let* ((no-wordbreak
+            (replace-regexp-in-string "­[ \n]*" "" (buffer-string)))
+           (no-hidden
+               (replace-regexp-in-string "\ufeff\\|\u200b\\|\u200f\\|\u202e\\|\u200e\\|\ufffc" "" no-wordbreak))
+           (no-thinspace
+            (replace-regexp-in-string " " " " no-hidden))
+           (no-initial-spaces
+            (replace-regexp-in-string "\\` *" "" no-thinspace))
+           (no-final-spaces
+            (replace-regexp-in-string " *\\'" "" no-initial-spaces))
+           (convert-en-dash
+            (replace-regexp-in-string "–" "--" no-final-spaces))
+           (convert-em-dash
+            (replace-regexp-in-string "—" "---" convert-en-dash))
+           (convert-single-quotes
+            (replace-regexp-in-string "‘\\|’\\|’" "'" convert-em-dash))
+           (convert-double-quotes
+            (replace-regexp-in-string "“\\|”" "\"" convert-single-quotes)))
+      (replace-regexp-in-string "" "" convert-double-quotes))))
   (defun avery-reverse-quotes (quotation)
     (let* ((trick
             (replace-regexp-in-string "\"" "&&&" quotation))
@@ -1575,6 +1603,13 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
     (insert "  " (avery-clean-quote) " ")
     (save-excursion (org-ref-helm-insert-cite-link))
     (org-fill-paragraph))
+(defun avery-clean-buffer ()
+  (interactive)
+  (kill-region (point-min) (point-max))
+  (insert (avery-clean-quote2)))
+(defun avery-clean-insert ()
+  (interactive)
+  (insert (avery-clean-quote2)))
   (defun avery-insert-short-quote ()
     (interactive)
     (unless (looking-at " \\|\\w") (forward-char))
