@@ -95,7 +95,7 @@
    '("citekey" "date" "entry-type" "title" "url" "file" "author" "editor" "pdf?" "file" "author-or-editor" "keywords" "year"
      "author-abbrev" "editor-abbrev" "author-or-editor-abbrev"))
   (setq orb-process-file-keyword t
-        orb-file-field-extensions '("pdf")
+        orb-attached-file-field-extensions '("pdf")
         orb-insert-interface 'helm-bibtex
         orb-insert-generic-candidates-format 'key
         orb-insert-link-description 'citation-org-ref-3
@@ -1447,7 +1447,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                ("\\subsection{%s}" . "\\subsection*{%s}")
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
 
-(setq org-latex-listings t)
+(setq org-latex-src-block-backend 'listings)
 ;;;;;;  Org Article
 (add-to-list 'org-latex-classes
              '("org-article"
