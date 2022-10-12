@@ -45,37 +45,51 @@
 ;; This is required for some packages whose default branch isn't 'master' (which
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
+;;; misc
 (package! outshine)
 (package! xclip)
-(package! ox-pandoc)
-(package! nord-theme)
-(package! doom-themes)
 (package! pdf-tools)
 (package! vulpea
   :recipe (:host github :repo "d12frosted/vulpea"))
+
+(package! el-get)
+;;; org mode extensions
+;;;; org roam bibtex support
 (package! org-roam-bibtex
   :recipe (:host github :repo "org-roam/org-roam-bibtex"))
-;; (package! tree-sitter)
-;; (package! tree-sitter-langs)
 ;; When using org-roam via the `+roam` flag
 (unpin! org-roam)
+;;;; word count
+(package! org-wc
+  :recipe (:host github :repo "tesujimath/org-wc"))
+;; toc support
+(package! toc-org)
+;;;; export backends
+(package! ox-epub)
+(package! ox-pandoc)
 
-;; (package! evil-snipe :disable t)
-;; When using bibtex-completion via the `biblio` module
-(unpin! bibtex-completion helm-bibtex ivy-bibtex)
-(package! gruvbox-theme)
+;;; ui
+;;;; cursor
 (package! evil-terminal-cursor-changer)
-;; (package! base16-theme)
-(package! el-get)
-(package! ox-epub)
-(package! ox-epub)
-(package! ox-epub)
+(package! centered-cursor-mode)
+;;;; speedbar
+(package! sr-speedbar)
+(package! pretty-speedbar
+   :recipe (:host github :repo "kcyarn/pretty-speedbar"))
+;; (package! doom-todo-ivy :recipe (:host github :repo "jsmestad/doom-todo-ivy"))
+;;;; visual fill column
+(package! visual-fill-column)
+(package! winum)
+
+;;;; themes
+(package! gruvbox-theme)
 (package! flatui-theme)
 (package! flatui-dark-theme)
 (package! flucui-themes)
 (package! ample-theme)
 (package! dakrone-theme)
-
+(package! nord-theme)
+(package! doom-themes)
 (package! sublime-themes)
 ;; (package! dichromacy-theme)
 (package! farmhouse-theme
@@ -89,8 +103,13 @@
 (package! color-theme-sanityinc-tomorrow)
 (package! tangotango-theme)
 (package! mixed-pitch)
+
+;;; bibliography management
 (package! zotxt)
-(package! centered-cursor-mode)
+
+;; When using bibtex-completion via the `biblio` module
+(unpin! bibtex-completion helm-bibtex ivy-bibtex)
+;; (package! base16-theme)
 (package! bibtex-completion
   :recipe (:host github :repo "tmalsburg/helm-bibtex"
            :files ("bibtex-completion.el")))
@@ -98,12 +117,3 @@
             :recipe (:host github :repo "jkitchin/org-ref"))
 ;;           :recipe (:host github :repo "larandall/org-ref"
 ;;                          :branch "fix-citation-export-for-pandoc-and-org"))
-(package! toc-org)
-(package! sr-speedbar)
-(package! pretty-speedbar
-   :recipe (:host github :repo "kcyarn/pretty-speedbar"))
-;; (package! doom-todo-ivy :recipe (:host github :repo "jsmestad/doom-todo-ivy"))
-(package! visual-fill-column)
-(package! org-wc
-  :recipe (:host github :repo "tesujimath/org-wc"))
-(package! winum)
