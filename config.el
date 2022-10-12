@@ -29,16 +29,29 @@
 ;; font string. You generally only need these two:
 (setq doom-font (font-spec :family (if (string= system-type "gnu/linux")
                                        "JetBrains Mono"
-                                     "JetBrains Mono NL")
-                           :size (if  (and (string= system-type "gnu/linux")
-                                           ;; (string= system-name "avery-imac")
-                                           t)
+                                     "Triplicate B Code")
+                           :size
                                      (if (and
                                           (> (display-pixel-width) 1921)
                                           (> (display-pixel-height) 1081))
-                                         24
+                                         (if (string= system-type "gnu/linux")
+                                           ;; (string= system-name "avery-imac")
+                                             24
+                                         16)
                                        14)
-                                   14)
+                           ))
+(setq doom-variable-pitch-font (font-spec :family (if (string= system-type "gnu/linux")
+                                                      "Triplicate A"
+                                                    "Triplicate A")
+                           :size
+                                     (if (and
+                                          (> (display-pixel-width) 1921)
+                                          (> (display-pixel-height) 1081))
+                                         (if (string= system-type "gnu/linux")
+                                           ;; (string= system-name "avery-imac")
+                                             28
+                                         18)
+                                       17)
                            ))
 
 
@@ -46,10 +59,17 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-theme  ;; 'gruvbox-dark-medium
-      'doom-sourcerer)
+      'flucui-dark)
 
 ;;; Centered Cursor
 (global-centered-cursor-mode 1)
+(setq-default ccm-vpos-init '(- (ccm-visible-text-lines)
+                                (round (ccm-visible-text-lines)1.618)
+                                ))
+;; (setq-default ccm-vpos-init '(round (ccm-visible-text-lines)1.618))
+(setq-default ccm-vpos-inverted 1)
+(setq ccm-recenter-at-end-of-file t)
+(setq scroll-margin 13)
 (xterm-mouse-mode 1)
   ;; (unless (display-graphic-p)
           (require 'evil-terminal-cursor-changer)
@@ -217,23 +237,23 @@ tasks."
 ;;;; Ace window config
 (setq aw-keys '(?y ?h ?e ?a ?t ?n ?r ?r ?p))
 ;;;; Winum mode config
-;; (use-package! winum
-;;   :commands (winum-mode)
-;;   :config
-;;   (winum-mode))
-;; (map!
-;;  :leader
-;;  "RET" #'jump-to-register
-;;  "1" #'winum-select-window-1
-;;  "2" #'winum-select-window-2
-;;  "3" #'winum-select-window-3
-;;  "4" #'winum-select-window-4
-;;  "5" #'winum-select-window-5
-;;  "6" #'winum-select-window-6
-;;  "7" #'winum-select-window-7
-;;  "8" #'winum-select-window-8
-;;  "9" #'winum-select-window-9
-;;  "0" #'winum-select-window-0-or-10)
+(use-package! winum
+  :commands (winum-mode)
+  :config
+  (winum-mode))
+(map!
+ :leader
+ "RET" #'jump-to-register
+ "1" #'winum-select-window-1
+ "2" #'winum-select-window-2
+ "3" #'winum-select-window-3
+ "4" #'winum-select-window-4
+ "5" #'winum-select-window-5
+ "6" #'winum-select-window-6
+ "7" #'winum-select-window-7
+ "8" #'winum-select-window-8
+ "9" #'winum-select-window-9
+ "0" #'treemacs-select-window)
 ;;;; hl-todo config
 (after! hl-todo
   (setq hl-todo-keyword-faces
@@ -253,19 +273,30 @@ tasks."
 (map! :after evil-org
       :map evil-org-mode-map
       :localleader
- "ef" #'org-publish-current-file
- "ep" #'org-publish-current-project
- "eg" #'send-buffer-professional
- "ea" #'send-buffer-personal
- "er" #'export-current-project
- "en" #'export-current-notes)
+ "Ef" #'org-publish-current-file
+ "Ep" #'org-publish-current-project
+ "Eg" #'send-buffer-professional
+ "Ea" #'send-buffer-personal
+ "Er" #'export-current-project
+ "En" #'export-current-notes)
 ;;;;; searching
 (map!
  :nvm
  "s" #'evil-avy-goto-char-2)
-(map! :map evil-normal-state-map
+(map! :after evil
+      :map evil-normal-state-map
       "zs" #'avery-fill-paragraph
-      "zq" #'unfill-paragraph)
+      "zq" #'unfill-paragraph
+      "j" #'evil-next-visual-line
+      "k" #'evil-previous-visual-line
+      "<down>" #'evil-next-visual-line
+      "<up>" #'evil-previous-visual-line)
+(map! :after evil
+      :map evil-visual-state-map
+      "j" #'evil-next-visual-line
+      "k" #'evil-previous-visual-line
+      "<down>" #'evil-next-visual-line
+      "<up>" #'evil-previous-visual-line)
 (map! :after evil-org
       :map evil-org-mode-map
       :nv
@@ -335,7 +366,9 @@ tasks."
 ;;;; DONE Fullscreen
   (if (string-equal system-type "gnu/linux")
       (add-to-list 'default-frame-alist '(fullscreen . maximized))
-    (add-to-list 'default-frame-alist '(fullscreen . fullscreen)))
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+    ;; (add-to-list 'default-frame-alist '(fullscreen . fullscreen))
+    )
 ;;;; STRT basic requires
 (use-package! org-checklist
   :after org)
@@ -461,18 +494,28 @@ tasks."
 ;;;; Fine Undo
   (setq evil-want-fine-undo t)
 ;;;; Fill in org mode
-(add-hook 'org-mode-hook
+(defun my-set-margins ()
+  "Set margins in current buffer."
+  (setq left-margin-width 6))
+
+;; (add-hook 'text-mode-hook 'my-set-margins)
+;; (use-package! mixed-pitch
+;;   :hook (org-mode . mixed-pitch-mode)
+;;   :config
+;;   ;; (setq mixed-pitch-face 'variable-pitch)
+;;   (setq mixed-pitch-set-height 1)
+;;   )
+(add-hook 'text-mode-hook
           (lambda ()
-            (setq fill-column 80)
+            (setq fill-column 84)
             ;; Enable automatic line wrapping at fill column
-            (auto-fill-mode 1)
-            (visual-fill-column-mode -1)
+            (auto-fill-mode -1)
+            ;; (setq display-line-numbers-type nil)
+            ;; (set-window-margins (selected-window) 6 2)
+            (visual-fill-column-mode 1)
             (smartparens-mode 1)
             (show-smartparens-mode -1)))
-(after!
-
-
-  org (setq org-tags-column -80))
+(after!  org (setq org-tags-column -78))
 (defun unfill-paragraph ()
     (interactive)
       (let ((fill-column (point-max)))
@@ -486,8 +529,20 @@ tasks."
   org
   (defvar org-fill-by-sentences nil
     "If non-nill fill paragraphs by sentences in org mode")
+  (defvar avery-wrap-sentences nil
+    "If non-nill `averys-fill-paragraph-by-sentences'wraps filled sentences at `fill-column'")
   (setq org-fill-by-sentences t)
+  (setq avery-wrap-sentences nil)
   (defun averys-fill-paragraph-by-sentences (&optional justify)
+  "This function fills a paragraph by sentences, principally in org-mode."
+   (interactive)
+  (let ((fill-column
+    (if avery-wrap-sentences
+        fill-column
+      (point-max))))
+    (averys-fill-paragraph-by-sentences-and-wrap)
+    ))
+  (defun averys-fill-paragraph-by-sentences-and-wrap (&optional justify)
   "This function fills a paragraph by sentences, principally in org-mode."
   (interactive)
   (save-excursion
@@ -511,6 +566,7 @@ tasks."
              (org-element-type (org-element-at-point))
              'item) (> 0 (current-indentation))) (setq isitem t)))
         (while (< (point) end)
+
           (org-forward-sentence)
           (unless (looking-back "^[ \\t]*[0-9]*\\.")
           (setq eos (point))
@@ -524,9 +580,9 @@ tasks."
           (unless (> next-s end)
             (if isitem
               (let* ((trailing-data
-	                   (delete-and-extract-region (point) (line-end-position)))
+               (delete-and-extract-region (point) (line-end-position)))
                     (clean-data (replace-regexp-in-string "^[ \t]*" "" trailing-data)))
-		            (save-excursion
+               (save-excursion
                   (org--newline t nil t)
                   (insert clean-data))))
             (delete-horizontal-space)
@@ -704,13 +760,15 @@ filling the current element."
 ;;;; flyspell in org mode
 (dolist (hook '(text-mode-hook))
   (add-hook hook (lambda () (flyspell-mode 1))))
-
+;; (add-hook 'text-mode-hook (lambda ()(variable-pitch-mode t)))
 (setq ispell-program-name (if (string-equal system-type "gnu/linux") "/usr/bin/hunspell" "/usr/local/bin/aspell"))
 (setq ispell-dictionary "american")
 (defvar pomodoro-buffer nil)
 ;;;; DONE Some org setup
 ;;;;; General org setup
 (after! org
+  (require 'ox-extra)
+  (ox-extras-activate '(ignore-headlines))
   (setq
 ;;;;;; indentation
    org-adapt-indentation nil
@@ -754,6 +812,16 @@ filling the current element."
   (defvar avery_writinglog nil)
   (setq avery_writinglog "~/Dropbox/Essays/Toward_a_principled_pluralism/logs/Writinglog.csv")
   (defvar pomodoro-buffer nil)
+(defun my-start-quickwrite ()
+    (interactive)
+    (my-clock-in)
+    (run-with-timer
+     720 nil 'my-clock-out))
+(defun my-start-short-pomodoro ()
+    (interactive)
+    (my-clock-in)
+    (run-with-timer
+     240 nil 'my-clock-out))
   (defun my-start-writing-pomodoro ()
     (interactive)
     (my-clock-in)
@@ -1487,15 +1555,15 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
 (use-package! reftex
   :after (:any org latex tex-mode)
   :config
-(setq reftex-default-bibliography '("~/Dropbox/Resources/bib/mybib/My-Library.bib")))
-(setq bibtex-completion-bibliography '("~/Dropbox/Resources/bib/mybib/My-Library.bib"))
+(setq reftex-default-bibliography '("~/Dropbox/bib/My-Library.bib")))
+(setq bibtex-completion-bibliography '("~/Dropbox/bib/My-Library.bib"))
 ;;;;; Org-reg
 (use-package! org-ref
   :after org
   :config
   (setq
    ;; org-ref-bibliography-notes "~/Dropbox/zotfiles/notes.org"
-      org-ref-default-bibliography '("~/Dropbox/Resources/bib/mybib/My-Library.bib")
+      org-ref-default-bibliography '("~/Dropbox/bib/My-Library.bib")
       org-ref-pdf-directory "~/Dropbox/zotfiles/")
   (setf (cdr (assoc 'org-mode bibtex-completion-format-citation-functions)) 'org-ref-format-citation))
 

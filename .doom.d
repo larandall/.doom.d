@@ -1,1 +1,1 @@
-/home/avery/Dropbox/Resources/dotfiles/.doom.d
+/Users/averyrandall/Dropbox/Resources/dotfiles/.doom.d

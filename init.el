@@ -47,7 +47,7 @@
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        ;; (window-select +ace-window)     ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
-       ;;zen               ; distraction-free coding or writing
+       zen               ; distraction-free coding or writing
 
        :editor
        (evil +everywhere); come to the dark side, we have cookies
@@ -183,5 +183,9 @@
        (default +bindings +smartparens))
 
 (setq evil-respect-visual-line-mode nil)
-
+(setq native-comp-deferred-compilation t)
+;; (use-package-hook! evil
+;;   :pre-init
+;;   (setq evil-respect-visual-line-mode t) ;; sane j and k behavior
+;;   t)
 (setq org-export-backends '(html latex md odt pandoc))

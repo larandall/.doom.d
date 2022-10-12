@@ -60,13 +60,35 @@
 ;; When using org-roam via the `+roam` flag
 (unpin! org-roam)
 
+;; (package! evil-snipe :disable t)
 ;; When using bibtex-completion via the `biblio` module
 (unpin! bibtex-completion helm-bibtex ivy-bibtex)
 (package! gruvbox-theme)
-
 (package! evil-terminal-cursor-changer)
-(package! base16-theme)
+;; (package! base16-theme)
 (package! el-get)
+(package! ox-epub)
+(package! ox-epub)
+(package! ox-epub)
+(package! flatui-theme)
+(package! flatui-dark-theme)
+(package! flucui-themes)
+(package! ample-theme)
+(package! dakrone-theme)
+
+(package! sublime-themes)
+;; (package! dichromacy-theme)
+(package! farmhouse-theme
+  :recipe (:host github :repo "mattly/emacs-farmhouse-theme"))
+(package! flatland-theme)
+(package! mustang-theme)
+(package! naquadah-theme)
+(package! noctilux-theme)
+(package! smyx-theme)
+(package! soft-charcoal-theme)
+(package! color-theme-sanityinc-tomorrow)
+(package! tangotango-theme)
+(package! mixed-pitch)
 (package! zotxt)
 (package! centered-cursor-mode)
 (package! bibtex-completion
@@ -84,4 +106,4 @@
 (package! visual-fill-column)
 (package! org-wc
   :recipe (:host github :repo "tesujimath/org-wc"))
-;; (package! winum)
+(package! winum)
