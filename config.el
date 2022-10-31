@@ -3,6 +3,7 @@
 ;; Place your private configuration here!Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 (require 'server)
+(add-to-list 'load-path (concat doom-user-dir "avery/"))
 (unless server-process (server-start))
 (defun wrap-obsolete (orig-fn &rest args)
   (let ((args_ (if (= (length args) 2)
@@ -29,7 +30,7 @@
 ;; font string. You generally only need these two:
 (setq doom-font (font-spec :family (if (string= system-type "gnu/linux")
                                        "JetBrains Mono"
-                                     "Triplicate B Code")
+                                     "Triplicate A Code")
                            :size
                                      (if (and
                                           (> (display-pixel-width) 1921)
@@ -37,29 +38,29 @@
                                          (if (string= system-type "gnu/linux")
                                            ;; (string= system-name "avery-imac")
                                              24
-                                         16)
+                                         15)
                                        14)
                            ))
-(setq doom-variable-pitch-font (font-spec :family (if (string= system-type "gnu/linux")
-                                                      "Triplicate A"
-                                                    "Triplicate A")
-                           :size
-                                     (if (and
-                                          (> (display-pixel-width) 1921)
-                                          (> (display-pixel-height) 1081))
-                                         (if (string= system-type "gnu/linux")
-                                           ;; (string= system-name "avery-imac")
-                                             28
-                                         18)
-                                       17)
-                           ))
+;; (setq doom-variable-pitch-font (font-spec :family (if (string= system-type "gnu/linux")
+;;                                                       "Triplicate A"
+;;                                                     "Triplicate A")
+;;                            :size
+;;                                      (if (and
+;;                                           (> (display-pixel-width) 1921)
+;;                                           (> (display-pixel-height) 1081))
+;;                                          (if (string= system-type "gnu/linux")
+;;                                            ;; (string= system-name "avery-imac")
+;;                                              28
+;;                                          18)
+;;                                        17)
+;;                            ))
 
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-theme  ;; 'gruvbox-dark-medium
-      'flucui-dark)
+      'noctilux)
 
 ;;; Centered Cursor
 (global-centered-cursor-mode 1)
@@ -118,8 +119,8 @@
         orb-attached-file-field-extensions '("pdf")
         orb-insert-interface 'helm-bibtex
         orb-insert-generic-candidates-format 'key
-        orb-insert-link-description 'citation-org-ref-3
-        orb-roam-ref-format 'org-ref-v3)
+        orb-insert-link-description 'citation-org-cite
+        orb-roam-ref-format 'org-cite)
   (org-roam-bibtex-mode)
   (setq org-roam-capture-templates
         '(
@@ -409,7 +410,7 @@ tasks."
   :init
     (add-hook 'LaTeX-mode-hook
             (lambda ()
-              (TeX-fold-mode 1)
+              (TeX-fold-mode 0)
               (add-hook 'find-file-hook 'TeX-fold-buffer t t)
               (outline-minor-mode 1)
               (outshine-mode)
@@ -1093,22 +1094,9 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
 ;;;;;; classicthesis-report
 (add-to-list 'org-latex-classes
                '("classicthesis-report"
-                 "\\documentclass{scrreprt}
-\\KOMAoptions{twoside,%
-  titlepage,%
-  numbers=noenddot,%
-  headinclude,%
-  footinclude,%
-  cleardoublepage=empty,%
-  BCOR=5mm,%
-  abstract=true, % Turn off, if you decide to use book class.
-  open=right,
-  fontsize=11pt,%
-}
-\\usepackage{classic-config}
+                 "\\documentclass[]{scrreprt}
  [NO-DEFAULT-PACKAGES]
  [NO-PACKAGES]
- [NO-EXTRA]
 "
                  ("\\chapter{%s}" . "\\chapter*{%s}")
                  ("\\section{%s}" . "\\section*{%s}")
@@ -1558,6 +1546,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
 (setq reftex-default-bibliography '("~/Dropbox/bib/My-Library.bib")))
 (setq bibtex-completion-bibliography '("~/Dropbox/bib/My-Library.bib"))
 ;;;;; Org-reg
+
 (use-package! org-ref
   :after org
   :config
@@ -1565,7 +1554,30 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
    ;; org-ref-bibliography-notes "~/Dropbox/zotfiles/notes.org"
       org-ref-default-bibliography '("~/Dropbox/bib/My-Library.bib")
       org-ref-pdf-directory "~/Dropbox/zotfiles/")
-  (setf (cdr (assoc 'org-mode bibtex-completion-format-citation-functions)) 'org-ref-format-citation))
+  ;; (setf (cdr (assoc 'org-mode bibtex-completion-format-citation-functions)) 'org-ref-format-citation)
+  )
+(defvar ave/bib
+  nil "A list of local bibliographies")
+(setq ave/bib '("~/Dropbox/bib/My-Library.bib"))
+(use-package! oc
+  :after org
+  :config
+  (setq
+   ;; org-ref-bibliography-notes "~/Dropbox/zotfiles/notes.org"
+       org-cite-global-bibliography ave/bib
+)
+  (setf (cdr
+         (assoc 'org-mode bibtex-completion-format-citation-functions))
+        'bibtex-completion-format-citation-org-cite)
+)
+(use-package! citar
+  :after oc
+  :config
+  (setq
+       org-cite-global-bibliography  ave/bib
+       )
+)
+
 
 ;;;; file register
   (set-register ?j (cons 'file "~/Dropbox/Personal/Journals/Journal.org"))
