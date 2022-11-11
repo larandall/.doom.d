@@ -2,9 +2,14 @@
 ;;;; Preliminaries
 ;; Place your private configuration here!Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
-(require 'server)
-(add-to-list 'load-path (concat doom-user-dir "avery/"))
-(unless server-process (server-start))
+(use-package server
+  :defer 1
+:config (unless server-process (server-start)))
+(defvar conf-dir (expand-file-name "~/.dotfiles") 
+  "Where I put my config files")
+(setq conf-dir (expand-file-name "~/Dropbox/Resources/dotfiles/.doom.d/"))
+(add-to-list 'load-path (concat conf-dir "avery/"))
+(require 'a-keymap)
 (defun wrap-obsolete (orig-fn &rest args)
   (let ((args_ (if (= (length args) 2)
                    (append args (list "0"))
@@ -62,6 +67,8 @@
 (setq doom-theme  ;; 'gruvbox-dark-medium
       'noctilux)
 
+;;; Fill column indicator
+(display-fill-column-indicator-mode 1)
 ;;; Centered Cursor
 (global-centered-cursor-mode 1)
 (setq-default ccm-vpos-init '(- (ccm-visible-text-lines)
@@ -78,13 +85,14 @@
 ;; )
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
+(use-package ave-org)
 (setq org-directory "~/Dropbox/org/")
 (setq org-roam-directory "~/Dropbox/org/roam/")
 (setq deft-directory org-roam-directory)
 (after! org
-  (add-to-list 'org-agenda-files "~/Dropbox/org/roam/")
-  (add-to-list 'org-agenda-files "~/Dropbox/org/roam/references")
-  (add-to-list 'org-agenda-files "~/Dropbox/org/roam/people")
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/org/roam/")
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/org/roam/references")
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/org/roam/people")
   ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/notes/")
   ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/logs/")
   ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/")
@@ -108,7 +116,7 @@
 (use-package! org-roam-bibtex
   :after org-roam
   :config
-  (require 'org-ref)
+  ;; (require 'org-ref)
   (require 'helm-bibtex)
   (require 'orb-helm)
   (require 'bibtex-completion)
@@ -152,66 +160,6 @@
 ;;   (require 'tree-sitter-langs)
 ;;   (global-tree-sitter-mode)
 ;;   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-;;; vulpea setup
-(use-package! vulpea
-  :config
-  (defun vulpea-project-p ()
-  "Return non-nil if current buffer has any todo entry.
-
-TODO entries marked as done are ignored, meaning the this
-function returns nil if current buffer contains only completed
-tasks."
-  (seq-find                                 ; (3)
-   (lambda (type)
-     (eq type 'todo))
-   (org-element-map                         ; (2)
-       (org-element-parse-buffer 'headline) ; (1)
-       'headline
-     (lambda (h)
-       (org-element-property :todo-type h)))))
-
-(defun vulpea-project-update-tag ()
-    "Update PROJECT tag in the current buffer."
-    (when (and (not (active-minibuffer-window))
-               (vulpea-buffer-p))
-      (save-excursion
-        (goto-char (point-min))
-        (let* ((tags (vulpea-buffer-tags-get))
-               (original-tags tags))
-          (if (vulpea-project-p)
-              (setq tags (cons "project" tags))
-            (setq tags (remove "project" tags)))
-          (unless (eq original-tags tags)
-            (apply #'vulpea-buffer-tags-set (seq-uniq tags)))))))
-
-(defun vulpea-buffer-p ()
-  "Return non-nil if the currently visited buffer is a note."
-  (and buffer-file-name
-       (string-prefix-p
-        (expand-file-name (file-name-as-directory org-roam-directory))
-        (file-name-directory buffer-file-name))))
-
-(defun vulpea-project-files ()
-    "Return a list of note files containing 'project' tag." ;
-    (seq-uniq
-     (seq-map
-      #'car
-      (org-roam-db-query
-       [:select [nodes:file]
-        :from tags
-        :left-join nodes
-        :on (= tags:node-id nodes:id)
-        :where (like tag (quote "%\"project\"%"))]))))
-
-(defun vulpea-agenda-files-update (&rest _)
-  "Update the value of `org-agenda-files'."
-  (setq org-agenda-files (vulpea-project-files)))
-
-(add-hook 'find-file-hook #'vulpea-project-update-tag)
-(add-hook 'before-save-hook #'vulpea-project-update-tag)
-
-(advice-add 'org-agenda :before #'vulpea-agenda-files-update)
-)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -410,17 +358,18 @@ tasks."
   :init
     (add-hook 'LaTeX-mode-hook
             (lambda ()
-              (TeX-fold-mode 0)
+              (TeX-fold-mode 1)
               (add-hook 'find-file-hook 'TeX-fold-buffer t t)
               (outline-minor-mode 1)
               (outshine-mode)
               (visual-line-mode 1)
-              (visual-fill-column-mode 1)
-              (auto-fill-mode -1)))
-(add-hook 'evil-insert-state-exit-hook '(lambda () (if (and(bound-and-true-p TeX-fold-auto)
+              (visual-fill-column-mode -1)
+              (display-fill-column-indicator-mode 1)
+              (auto-fill-mode 1)))
+(add-hook 'evil-insert-state-exit-hook #'(lambda () (if (and(bound-and-true-p TeX-fold-auto)
                                                          (bound-and-true-p TeX-fold-mode))
                                                          (TeX-fold-buffer))))
-  (setq tex-fold-unfold-around-mark t)
+  (setq TeX-fold-unfold-around-mark t)
   (setq reftex-toc-split-windows-horizontally t)
   (setq reftex-toc-split-windows-fraction 0.25)
   (setq reftex-toc-follow-mode t)
@@ -508,12 +457,12 @@ tasks."
 ;;   )
 (add-hook 'text-mode-hook
           (lambda ()
-            (setq fill-column 84)
+            (setq fill-column 80)
             ;; Enable automatic line wrapping at fill column
-            (auto-fill-mode -1)
+            (auto-fill-mode 1)
             ;; (setq display-line-numbers-type nil)
             ;; (set-window-margins (selected-window) 6 2)
-            (visual-fill-column-mode 1)
+            (visual-fill-column-mode -1)
             (smartparens-mode 1)
             (show-smartparens-mode -1)))
 (after!  org (setq org-tags-column -78))
@@ -531,9 +480,10 @@ tasks."
   (defvar org-fill-by-sentences nil
     "If non-nill fill paragraphs by sentences in org mode")
   (defvar avery-wrap-sentences nil
-    "If non-nill `averys-fill-paragraph-by-sentences'wraps filled sentences at `fill-column'")
+    "If non-nill `averys-fill-paragraph-by-sentences'wraps filled sentences at
+`fill-column'")
   (setq org-fill-by-sentences t)
-  (setq avery-wrap-sentences nil)
+  (setq avery-wrap-sentences t)
   (defun averys-fill-paragraph-by-sentences (&optional justify)
   "This function fills a paragraph by sentences, principally in org-mode."
    (interactive)
@@ -569,7 +519,7 @@ tasks."
         (while (< (point) end)
 
           (org-forward-sentence)
-          (unless (looking-back "^[ \\t]*[0-9]*\\.")
+          (unless (looking-back "^[ \\t]*[0-9]*\\." (line-beginning-position))
           (setq eos (point))
           (setq bos (line-beginning-position))
           ;; (unless isitem
@@ -1565,6 +1515,8 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
   (setq
    ;; org-ref-bibliography-notes "~/Dropbox/zotfiles/notes.org"
        org-cite-global-bibliography ave/bib
+       citar-bibliography ave/bib
+
 )
   (setf (cdr
          (assoc 'org-mode bibtex-completion-format-citation-functions))
@@ -1681,7 +1633,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
     (forward-line)
     (beginning-of-line)
     (insert "  " (avery-clean-quote) " ")
-    (save-excursion (org-ref-helm-insert-cite-link))
+    (save-excursion (org-cite-insert nil))
     (org-fill-paragraph))
 (defun avery-clean-buffer ()
   (interactive)
