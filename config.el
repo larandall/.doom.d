@@ -86,32 +86,6 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (use-package ave-org)
-(setq org-directory "~/Dropbox/org/")
-(setq org-roam-directory "~/Dropbox/org/roam/")
-(setq deft-directory org-roam-directory)
-(after! org
-  ;; (add-to-list 'org-agenda-files "~/Dropbox/org/roam/")
-  ;; (add-to-list 'org-agenda-files "~/Dropbox/org/roam/references")
-  ;; (add-to-list 'org-agenda-files "~/Dropbox/org/roam/people")
-  ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/notes/")
-  ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/logs/")
-  ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/")
-  )
-(after! org
-  (add-to-list 'org-todo-keywords '(sequence
-                                    "NOTE(n)"
-                                    "|"
-                                    "NOTED(N)"))
-  (add-to-list 'org-todo-keywords '(sequence
-                                    "TOREAD(r)"
-                                    "READNG(g)"
-                                    "ANNOTT(G)"
-                                    "|"
-                                    "READ(R)"))
-
-  (add-to-list 'org-todo-keyword-faces '("READNG" . +org-todo-active))
- (add-to-list 'org-todo-keyword-faces '("ANNOTT" . +org-todo-active))
-  )
 
 (use-package! org-roam-bibtex
   :after org-roam
@@ -1190,18 +1164,6 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
     (unless (looking-at " \\|\\w") (forward-char))
     (insert " \"" (avery-clean-quote) "\" ")
     (fill-paragraph))
-(after! org
-  ;; (setq org-hide-leading-stars nil
-  ;;       org-indent-mode-turns-on-hiding-stars nil)
-  (setq org-superstar-headline-bullets-list '(
-                                              ;; "₽"
-                                              "№"
-                                              "§"
-                                              "¶"
-                                              "◊"
-                                              ;; "†"
-                                              "‡"
-                                              )))
 (map!
  :map evil-org-mode-map
 

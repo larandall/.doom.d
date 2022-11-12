@@ -1,6 +1,44 @@
 ;;; $DOOMDIR/avery/ave-org.el -*- lexical-binding: t; -*-
 ;;;;; General org setup
 
+(setq org-directory "~/Dropbox/org/")
+(setq org-roam-directory "~/Dropbox/org/roam/")
+(setq deft-directory org-roam-directory)
+(after! org
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/org/roam/")
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/org/roam/references")
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/org/roam/people")
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/notes/")
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/logs/")
+  ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/")
+  )
+(after! org
+  (add-to-list 'org-todo-keywords '(sequence
+                                    "NOTE(n)"
+                                    "|"
+                                    "NOTED(N)"))
+  (add-to-list 'org-todo-keywords '(sequence
+                                    "TOREAD(r)"
+                                    "READNG(g)"
+                                    "ANNOTT(G)"
+                                    "|"
+                                    "READ(R)"))
+  (add-to-list 'org-todo-keyword-faces '("READNG" . +org-todo-active))
+ (add-to-list 'org-todo-keyword-faces '("ANNOTT" . +org-todo-active))
+  )
+
+(after! org
+  ;; (setq org-hide-leading-stars nil
+  ;;       org-indent-mode-turns-on-hiding-stars nil)
+  (setq org-superstar-headline-bullets-list '(
+                                              ;; "₽"
+                                              "№"
+                                              "§"
+                                              "¶"
+                                              "◊"
+                                              ;; "†"
+                                              "‡"
+                                              )))
 (after! org
   (setq
 ;;;;;; indentation
