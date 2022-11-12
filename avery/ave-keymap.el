@@ -1,4 +1,4 @@
-;;; $DOOMDIR/avery/a-keymap.el -*- lexical-binding: t; -*-
+;;; $DOOMDIR/avery/ave-keymap.el -*- lexical-binding: t; -*-
 (require 'evil-commands)
 ;; (require 'workspaces)
 ;; (require 'lookup)
@@ -30,4 +30,4 @@
  "k" #'+lookup/documentation
  "j" #'evil-join
  )
-(provide 'a-keymap)
+(provide 'ave-keymap)

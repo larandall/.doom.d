@@ -1,1 +1,0 @@
-/Users/averyrandall/Dropbox/Resources/dotfiles/.doom.d
