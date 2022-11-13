@@ -47,6 +47,10 @@
 ;(package! builtin-package :recipe (:branch "develop"))
 ;;; misc
 (package! outshine)
+
+(package! Emacs-langtool
+  :recipe (:host github :repo
+           "hayashi1120/Emacs-langtool"))
 (package! xclip)
 (package! pdf-tools)
 (package! vulpea

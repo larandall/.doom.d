@@ -9,14 +9,17 @@
   "Where I put my config files")
 (setq conf-dir (expand-file-name "~/Dropbox/Resources/dotfiles/.doom.d/"))
 (add-to-list 'load-path (concat conf-dir "avery/"))
-(require 'ave-keymap)
-(defun wrap-obsolete (orig-fn &rest args)
-  (let ((args_ (if (= (length args) 2)
-                   (append args (list "0"))
-                 args)))
-    (apply orig-fn args_)))
+(use-package! ave-keymap)
+(use-package! langtool
+  :init
+  (setq langtool-language-tool-jar "/usr/local/Cellar/languagetool/5.9/libexec/languagetool-commandline.jar"))
+;; (defun wrap-obsolete (orig-fn &rest args)
+;;   (let ((args_ (if (= (length args) 2)
+;;                    (append args (list "0"))
+;;                  args)))
+;;     (apply orig-fn args_)))
 
-(advice-add 'define-obsolete-function-alias :around #'wrap-obsolete)
+;; (advice-add 'define-obsolete-function-alias :around #'wrap-obsolete)
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -35,7 +38,7 @@
 ;; font string. You generally only need these two:
 (setq doom-font (font-spec :family (if (string= system-type "gnu/linux")
                                        "JetBrains Mono"
-                                     "Triplicate A Code")
+                                     "Triplicate A")
                            :size
                                      (if (and
                                           (> (display-pixel-width) 1921)
@@ -43,29 +46,29 @@
                                          (if (string= system-type "gnu/linux")
                                            ;; (string= system-name "avery-imac")
                                              24
-                                         15)
+                                         13)
                                        14)
                            ))
-;; (setq doom-variable-pitch-font (font-spec :family (if (string= system-type "gnu/linux")
-;;                                                       "Triplicate A"
-;;                                                     "Triplicate A")
-;;                            :size
-;;                                      (if (and
-;;                                           (> (display-pixel-width) 1921)
-;;                                           (> (display-pixel-height) 1081))
-;;                                          (if (string= system-type "gnu/linux")
-;;                                            ;; (string= system-name "avery-imac")
-;;                                              28
-;;                                          18)
-;;                                        17)
-;;                            ))
 
+(setq doom-variable-pitch-font (font-spec :family (if (string= system-type "gnu/linux")
+                                                      "Triplicate A"
+                                                    "Triplicate A")
+                           :size
+                                     (if (and
+                                          (> (display-pixel-width) 1921)
+                                          (> (display-pixel-height) 1081))
+                                         (if (string= system-type "gnu/linux")
+                                           ;; (string= system-name "avery-imac")
+                                             24
+                                         13)
+                                       14)
+                           ))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-theme  ;; 'gruvbox-dark-medium
-      'noctilux)
+      'doom-sourcerer)
 
 ;;; Fill column indicator
 (display-fill-column-indicator-mode 1)
@@ -543,6 +546,19 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
 (add-to-list 'org-latex-classes
                '("book-noparts"
                  "\\documentclass{book}"
+                 ("\\chapter{%s}" . "\\chapter*{%s}")
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+;;;;;; no header
+(add-to-list 'org-latex-classes
+               '("blank"
+                 "
+ [NO-DEFAULT-PACKAGES]
+ [NO-PACKAGES]
+"
                  ("\\chapter{%s}" . "\\chapter*{%s}")
                  ("\\section{%s}" . "\\section*{%s}")
                  ("\\subsection{%s}" . "\\subsection*{%s}")
