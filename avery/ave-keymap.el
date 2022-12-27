@@ -30,4 +30,11 @@
  "k" #'+lookup/documentation
  "j" #'evil-join
  )
+(map!
+ :after evil-org
+ :nvi "C-M-RET" #'avery-insert-heading
+ :leader
+ "ic" #'avery-insert-heading-and-clock
+ "ih" #'avery-insert-heading-and-append
+ )
 (provide 'ave-keymap)

@@ -42,7 +42,7 @@
 (after! org
   (setq
 ;;;;;; indentation
-   org-tags-column -78   
+   org-tags-column -80
    org-adapt-indentation nil
    org-startup-indented nil
 ;;;;;; insert headings wherever you are
@@ -75,6 +75,27 @@
   (setq
    org-inlinetask-min-level 10
    org-export-with-inlinetasks nil))
+
+(defun avery-insert-heading-and-clock ()
+  (interactive)
+  (org-insert-heading)
+  (if (org-clocking-p)
+      (org-clock-in)
+    (my-clock-in))
+  (evil-org-append-line 1))
+
+(defun avery-insert-heading-and-append ()
+  (interactive)
+  (org-insert-heading)
+  (if (org-clocking-p)
+      (org-clock-in))
+  (evil-org-append-line 1))
+
+(defun avery-insert-heading ()
+  (interactive)
+  (org-insert-heading)
+  (if (org-clocking-p)
+      (org-clock-in)))
 
 ;; ;;;;; DONE get smartparens to work
 ;; (remove-hook! 'org-load-hook

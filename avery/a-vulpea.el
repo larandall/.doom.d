@@ -21,7 +21,7 @@ tasks."
     "Update PROJECT tag in the current buffer."
     (when (and (not (active-minibuffer-window))
                (vulpea-buffer-p)
-               (buffer-modified-p) )
+               (buffer-modified-p))
       (save-excursion
         (goto-char (point-min))
         (let* ((tags (vulpea-buffer-tags-get))

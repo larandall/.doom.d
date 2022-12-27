@@ -208,3 +208,27 @@ filling the current element."
   (add-hook 'org-pomodoro-finished-hook (lambda () (my-clock-out-hook)))
   (add-hook 'org-pomodoro-started-hook (lambda () (my-clock-in-hook))))
 (provide 'ave-utils)
+
+;; * autocompile
+
+(defun avery-autocompile-files ()
+    "Return a list of note files containing 'project' tag." ;
+    (seq-uniq
+     (seq-map
+      #'car
+      (org-roam-db-query
+       [:select [nodes:file]
+        :from tags
+        :left-join nodes
+        :on (= tags:node-id nodes:id)
+        :where (like tag (quote "%\"autocompile\"%"))]))))
+
+(defun avery-autocompile ()
+  (interactive)
+  (if (equal major-mode 'org-mode)
+      (let ((file-tags (vulpea-buffer-tags-get)))
+        (if (member "autocompile" file-tags)
+            (org-latex-export-to-latex nil nil nil t)))))
+(use-package! vulpea)
+
+(add-hook 'after-save-hook #'avery-autocompile)

@@ -37,7 +37,7 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 (setq doom-font (font-spec :family (if (string= system-type "gnu/linux")
-                                       "JetBrains Mono"
+                                       "Triplicate A"
                                      "Triplicate A")
                            :size
                                      (if (and
@@ -68,11 +68,11 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-theme  ;; 'gruvbox-dark-medium
-      'doom-sourcerer)
+      'doom-nord)
 
-;;; Fill column indicator
+;;;; Fill column indicator
 (display-fill-column-indicator-mode 1)
-;;; Centered Cursor
+;;;; Centered Cursor
 (global-centered-cursor-mode 1)
 (setq-default ccm-vpos-init '(- (ccm-visible-text-lines)
                                 (round (ccm-visible-text-lines)1.618)
@@ -131,7 +131,7 @@
    "M-C-," #'orb-insert-link
    "M-C-a" #'org-roam-node-insert
    )
-;;; tree sitter
+;;;; tree sitter
 ;; (use-package! tree-sitter
 ;;   :config
 ;;   (require 'tree-sitter-langs)
@@ -1193,20 +1193,12 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
   ;; (spacemacs/set-leader-keys-for-major-mode 'org-mode "ir" 'avery-insert-short-quote)
   ;; (spacemacs/set-leader-keys-for-major-mode 'org-mode "iu" 'avery-insert-quote-simple)
 ;;;; agenda files
-  ;; (setq org-agenda-files
-  ;;        '("~/Dropbox/Personal/Journals/Journal.org"
-  ;;        "~/Dropbox/Personal/Journals/Buddhism.Spirituality.org"
-  ;;        "~/Dropbox/Writing Projects/Property Project/100_Property_Project.org"
-  ;;        "~/Dropbox/Writing Projects/Property Project/TODOs.org"
-  ;;        "~/Dropbox/Professional/GMD/Day-Sheets.org"
-  ;;        "~/Dropbox/Professional/GMD/Knack-Lists.org"
-  ;;        "~/Dropbox/Agendas/Personal.org"
-  ;;        "~/Dropbox/Calendars/Avery.org"
-  ;;        "~/Dropbox/Calendars/Coparent.org"
-  ;;        "~/Dropbox/Calendars/Maria.org"
-  ;;        "~/Dropbox/Calendars/Melissa.org"
-  ;;        "~/Dropbox/Calendars/MelissaPCC.org"
-  ;;        "~/Dropbox/Calendars/bname.org"))
+
+(setq org-agenda-files
+         '("~/Dropbox/Personal/2022-2023/"
+         "~/Dropbox/Resources/dotfiles/.doom.d/"
+         "~/Dropbox/Essays/Without/org/"))
+
 ;;;; org-toc
 (use-package! toc-org
   :commands (toc-org-insert-toc toc-org-mode)
