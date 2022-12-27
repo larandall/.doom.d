@@ -1182,7 +1182,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
 
 ***  IEEE
 
-#+BEGIN_SRC EMACS-LISP :TANGLE CONFIG.EL
+#+begin_src emacs-lisp :tangle config.el
 (add-to-list 'org-latex-classes
              '("IEEE"
                "\\documentclass{IEEEtran}

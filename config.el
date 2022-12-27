@@ -1,18 +1,19 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-;;;; Preliminaries
 ;; Place your private configuration here!Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 (use-package server
   :defer 1
 :config (unless server-process (server-start)))
-(defvar conf-dir (expand-file-name "~/.dotfiles") 
+(defvar conf-dir (expand-file-name "~/.dotfiles")
   "Where I put my config files")
 (setq conf-dir (expand-file-name "~/Dropbox/Resources/dotfiles/.doom.d/"))
 (add-to-list 'load-path (concat conf-dir "avery/"))
 (use-package! ave-keymap)
 (use-package! langtool
   :init
-  (setq langtool-language-tool-jar "/usr/local/Cellar/languagetool/5.9/libexec/languagetool-commandline.jar"))
+  (setq langtool-language-tool-jar (if (string= system-type "gnu/linux")
+"/usr/share/java/languagetool/languagetool.jar"                                       "/usr/local/Cellar/languagetool/5.9/libexec/languagetool-commandline.jar" )))
+
 ;; (defun wrap-obsolete (orig-fn &rest args)
 ;;   (let ((args_ (if (= (length args) 2)
 ;;                    (append args (list "0"))
@@ -70,9 +71,8 @@
 (setq doom-theme  ;; 'gruvbox-dark-medium
       'doom-nord)
 
-;;;; Fill column indicator
 (display-fill-column-indicator-mode 1)
-;;;; Centered Cursor
+
 (global-centered-cursor-mode 1)
 (setq-default ccm-vpos-init '(- (ccm-visible-text-lines)
                                 (round (ccm-visible-text-lines)1.618)
@@ -86,6 +86,7 @@
           (require 'evil-terminal-cursor-changer)
           (evil-terminal-cursor-changer-activate)
 ;; )
+
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (use-package ave-org)
@@ -131,7 +132,7 @@
    "M-C-," #'orb-insert-link
    "M-C-a" #'org-roam-node-insert
    )
-;;;; tree sitter
+
 ;; (use-package! tree-sitter
 ;;   :config
 ;;   (require 'tree-sitter-langs)
@@ -158,11 +159,13 @@
 ;;
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;absolute; they are implemented.
-;;;; STRT Convert config to doom syntax
-;;;; STRT Reorganize config to make navigating easier
-;;;; Ace window config
+
+
+
+
+
 (setq aw-keys '(?y ?h ?e ?a ?t ?n ?r ?r ?p))
-;;;; Winum mode config
+
 (use-package! winum
   :commands (winum-mode)
   :config
@@ -180,7 +183,7 @@
  "8" #'winum-select-window-8
  "9" #'winum-select-window-9
  "0" #'treemacs-select-window)
-;;;; hl-todo config
+
 (after! hl-todo
   (setq hl-todo-keyword-faces
         '(;; for tasks and projects that have not yet been started
@@ -193,8 +196,8 @@
           ("NOTE" success bold)
           ("DONE" font-lock-doc-face bold)
           ("DEPRECATED" font-lock-doc-face bold))))
-;;;; DONE Keybindings
-  (if (string-equal system-type "darwin")
+
+(if (string-equal system-type "darwin")
       (setq ns-command-modifier 'meta))
 (map! :after evil-org
       :map evil-org-mode-map
@@ -205,7 +208,7 @@
  "Ea" #'send-buffer-personal
  "Er" #'export-current-project
  "En" #'export-current-notes)
-;;;;; searching
+
 (map!
  :nvm
  "s" #'evil-avy-goto-char-2)
@@ -227,10 +230,10 @@
       :map evil-org-mode-map
       :nv
       "zs" #'avery-fill-paragraph)
-;;;;; get :q to work properly
+
 (after! evil-ex
   (evil-ex-define-cmd "q[uit]" 'kill-current-buffer))
-;;;; DONE Mode line
+
 (setq display-time-format nil)
 (setq display-time-24hr-format t)
 (setq display-time-day-and-date t)
@@ -239,7 +242,7 @@
   :init
   (setq doom-modeline-enable-word-count nil))
 ;; (display-battery-mode -1)
-;;;; DONE email setup commented out for now
+
 (use-package! smtpmail
   :after (:any message sendmail)
   :commands smtpmail-send-it)
@@ -273,37 +276,35 @@
     (interactive)
     (set-email-personal)
     (org-mime-org-buffer-htmlize)))
-;;;;; Set up some common mu4e variables (commented out for now)
-  ;; (setq mu4e-maildir "~/.mail"
-  ;;       mu4e-get-mail-command "offlineimap"
-  ;;       mu4e-update-interval 600
-  ;;       mu4e-compose-signature-auto-include t
-  ;;       mu4e-view-show-images t
-  ;;       mu4e-view-show-addresses t)
-;;;; DONE Auto saving
-  (defun my-save-if-bufferfilename ()
-    (if (buffer-file-name)
-        (progn
-          (save-buffer)
-          )
-      (message "no file is associated to this buffer: do nothing")))
-  (add-hook 'evil-insert-state-exit-hook 'my-save-if-bufferfilename)
 
-;;;; DONE Fullscreen
-  (if (string-equal system-type "gnu/linux")
+;; (setq mu4e-maildir "~/.mail"
+;;       mu4e-get-mail-command "offlineimap"
+;;       mu4e-update-interval 600
+;;       mu4e-compose-signature-auto-include t
+;;       mu4e-view-show-images t
+;;       mu4e-view-show-addresses t)
+
+(defun my-save-if-bufferfilename ()
+  (if (buffer-file-name)
+      (progn
+        (save-buffer)
+        )
+    (message "no file is associated to this buffer: do nothing")))
+(add-hook 'evil-insert-state-exit-hook 'my-save-if-bufferfilename)
+
+(if (string-equal system-type "gnu/linux")
       (add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
     ;; (add-to-list 'default-frame-alist '(fullscreen . fullscreen))
     )
 
-;;;; DONE Outshine mode
 (use-package! outshine
   :after (outline)
   :init
   (add-hook 'outline-minor-mode-hook 'outshine-mode))
 (after! elisp-mode
    (add-hook 'emacs-lisp-mode-hook 'outline-minor-mode))
-;;;; DONE doom-todo-ivy setup
+
 ;; (use-package! doom-todo-ivy
 ;;   :config
 ;;   (setq doom/ivy-task-tags
@@ -322,11 +323,11 @@
 ;;  :after doom-todo-ivy
 ;;  :leader
 ;;  "pt" #'ivy-magit-todos)
-;;;; DONE Latex configurations
+
 (use-package! ave-tex)
-;;;; Fine Undo
-  (setq evil-want-fine-undo t)
-;;;; Fill in org mode
+
+(setq evil-want-fine-undo t)
+
 ;; (defun my-set-margins ()
 ;;   "Set margins in current buffer."
 ;;   (setq left-margin-width 6))
@@ -345,7 +346,7 @@
             (auto-fill-mode 1)
             (visual-fill-column-mode -1)
             (display-fill-column-indicator-mode 1)
-            (smartparens-mode 1)            
+            (smartparens-mode 1)
             (show-smartparens-mode -1)))
 (use-package! ave-ispell)
 (use-package! ave-utils
@@ -359,8 +360,6 @@
 ;; (remove-hook! 'org-load-hook
 ;;              #'+org-init-smartparens-h)
 
-;;;;; Capture frame
-
 (after! org (setq +org-capture-frame-parameters
   `((name . "doom-capture")
     (width . 70)
@@ -368,7 +367,7 @@
     (transient . t)
     ,(if IS-LINUX '(display . ":1"))
     ,(if IS-MAC '(menu-bar-lines . 1)))))
-;;;;;; Reading list
+
 (after! org
   (defvar +org-capture-reading-notes-file
     "Reading_notes.org")
@@ -382,52 +381,52 @@
   (add-to-list 'org-capture-templates
           '("r" "Reading notes" entry  ; {project-root}/Reading_notes.org
            (file+headline +org-capture-reading-notes-file "Inbox")))))
-;;;;;;  Current file log entry
+
 (after! org
   (add-to-list 'org-capture-templates
         '("1" "Current file log entry" plain
            (file+datetree buffer-file-name)
            "\n\n%? " :clock-in :clock-keep))
-;;;;;; Day Sheet
-  (add-to-list 'org-capture-templates
+
+(add-to-list 'org-capture-templates
                '("d" "Day Sheet" entry (file+datetree "~/Dropbox/Professional/GMD/Day-Sheets.org")
                  "* Day Sheet %<%A %m/%d/%Y> :ignore:\n:PROPERTIES:\n:EXPORT_FILE_NAME: Sheets/%<%m-%d-%Y>\n:END:
 Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site:\n\nNotes:" :jump-to-captured nil))
-;;;;;; Letter
-  (add-to-list 'org-capture-templates
-               '("l" "letter" entry (file+datetree "~/Dropbox/org/Letters.org")
-                 "* Letter to %^{Addressee} %<%A %m/%d/%Y> :ignore:\n:PROPERTIES:\n:EXPORT_FILE_NAME: Letters/%\\1-%<%Y-%m-%d>\n:END:\n%?" :jump-to-captured t))
-;;;;;; Journal
-  (add-to-list 'org-capture-templates
-               '("j" "Journal" plain (file+datetree "~/Dropbox/Personal/Journals/Journal.org")
-                 "%?\nEntered on %U\n " :jump-to-captured t))
-;;;;;;  Avery todo
-  (add-to-list 'org-capture-templates
-               '("a" "Avery TODO" entry (file+olp "~/Dropbox/Professional/GMD/Avery-Todo.org" "Tasks" "Current")
-                 "* TODO %? \n%i\n %a"))
 
-  ;; (add-to-list 'org-capture-templates
-  ;;              '(("p" "Personal TODO" entry (file+olp "~/Dropbox/Agendas/Personal.org" "Inbox")
-  ;;                "* TODO %? \n%i\n")))
-;;;;;;  bibtex
-  (add-to-list 'org-capture-templates
-               '("b" "Bibtex" "* READ %?\n\n%a\n\n%:author (%:year): %:title\n   \
-         In %:journal, %:pages."))
-;;;;;;  reading
-  ;; (add-to-list 'org-capture-templates
-  ;;       '("u" "Reading" entry
-  ;;         (file+headline "~/Dropbox/P/Bib/Readinglist.org" "RLIST Inbox")
-  ;;         "** %^{Todo state|READ|FIND|PRINT|NOTES} [#%^{Priority|A|B|C}] New Reading Entry %? %^{BIB_TITLE}p %^{BIB_AUTHOR}p %^{BIB_EDITOR}p %^{BIB_YEAR}p %^{CUSTOM_ID}p %^g
-  ;;       :PROPERTIES:
-  ;;       :BIB_BTYPE: %^{Entry type|book|article|inbook|bookinbook|incollection|suppbook|phdthesis|proceedings|inproceedings|booklet}
-  ;;       :ENTERED_ON: %U %(my-org-bibtex-crossref)
-  ;;       :END:" :prepend t :jump-to-captured t))
-  )
-;;;;; Export
+(add-to-list 'org-capture-templates
+             '("l" "letter" entry (file+datetree "~/Dropbox/org/Letters.org")
+               "* Letter to %^{Addressee} %<%A %m/%d/%Y> :ignore:\n:PROPERTIES:\n:EXPORT_FILE_NAME: Letters/%\\1-%<%Y-%m-%d>\n:END:\n%?" :jump-to-captured t))
 
-;;;;;; async export
+(add-to-list 'org-capture-templates
+             '("j" "Journal" plain (file+datetree "~/Dropbox/Personal/Journals/Journal.org")
+               "%?\nEntered on %U\n " :jump-to-captured t))
+
+(add-to-list 'org-capture-templates
+             '("a" "Avery TODO" entry (file+olp "~/Dropbox/Professional/GMD/Avery-Todo.org" "Tasks" "Current")
+               "* TODO %? \n%i\n %a"))
+
+;; (add-to-list 'org-capture-templates
+;;              '(("p" "Personal TODO" entry (file+olp "~/Dropbox/Agendas/Personal.org" "Inbox")
+;;                "* TODO %? \n%i\n")))
+
+(add-to-list 'org-capture-templates
+             '("b" "Bibtex" "* READ %?\n\n%a\n\n%:author (%:year): %:title\n   \
+       In %:journal, %:pages."))
+
+;; (add-to-list 'org-capture-templates
+;;       '("u" "Reading" entry
+;;         (file+headline "~/Dropbox/P/Bib/Readinglist.org" "RLIST Inbox")
+;;         "** %^{Todo state|READ|FIND|PRINT|NOTES} [#%^{Priority|A|B|C}] New Reading Entry %? %^{BIB_TITLE}p %^{BIB_AUTHOR}p %^{BIB_EDITOR}p %^{BIB_YEAR}p %^{CUSTOM_ID}p %^g
+;;       :PROPERTIES:
+;;       :BIB_BTYPE: %^{Entry type|book|article|inbook|bookinbook|incollection|suppbook|phdthesis|proceedings|inproceedings|booklet}
+;;       :ENTERED_ON: %U %(my-org-bibtex-crossref)
+;;       :END:" :prepend t :jump-to-captured t))
+)
+
+
+
 (setq org-export-async-init-file "/Users/avery/Dropbox/Resources/dotfiles/lisp/org-setup.el")
-;;;;;; auto export
+
 (setq current-notes-file "~/Dropbox/Writing Projects/Property Project/010_Property-Notes.org")
 (setq current-project-file "~/Dropbox/Writing Projects/Property Project/100_Property_Project.org")
 
@@ -452,7 +451,6 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
     (interactive)
   (avery-export-file-async current-notes-file t))
 
-;;;;;; default packages
 (use-package! ox-latex
   :after (org ox)
   :commands (org-latex-export-as-latex
@@ -479,7 +477,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
        (#1# "amssymb" t)
        (#1# "capt-of" nil)
        (#1# "hyperref" nil))))
-;;;;;; Org publish
+
 (use-package! ox-publish
   :after org
   :init
@@ -518,12 +516,11 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
          :components ("Chapters" "Thesis-Simple"))
         ("Compile-Draft"
          :components ("Chapter-Base" "Thesis-Simple")))))
-;;;;;; Ignore headlines
+
 (use-package! ox-extra
   :after org
   :config
   (ox-extras-activate '(ignore-headlines)))
-;;;;;; Org Export
 
 (defvar latex-output-force nil
   "Force latexmk to rerun file.")
@@ -540,9 +537,9 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
   (if latex-output-force
       (setq org-latex-pdf-process '("latexmk -gg -e \"$pdflatex=q/pdflatex -synctex=1 -interaction=nonstopmode/\" -bibtex -pdf %f"))
     (setq org-latex-pdf-process '("latexmk -e \"$pdflatex=q/pdflatex -synctex=1 -interaction=nonstopmode/\" -bibtex -pdf %f"))))
-;;;;;; Org Latex Classes Setup
+
 (after! ox-latex
-;;;;;;  Book without parts (book-noparts)
+
 (add-to-list 'org-latex-classes
                '("book-noparts"
                  "\\documentclass{book}"
@@ -552,7 +549,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                  ("\\paragraph{%s}" . "\\paragraph*{%s}")
                  ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-;;;;;; no header
+
 (add-to-list 'org-latex-classes
                '("blank"
                  "
@@ -565,7 +562,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                  ("\\paragraph{%s}" . "\\paragraph*{%s}")
                  ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-;;;;;; classicthesis-report
+
 (add-to-list 'org-latex-classes
                '("classicthesis-report"
                  "\\documentclass[]{scrreprt}
@@ -578,7 +575,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                  ("\\paragraph{%s}" . "\\paragraph*{%s}")
                  ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-;;;;;; Book with nice outline
+
 (add-to-list 'org-latex-classes
              '("book-nice-outline"
                "\\documentclass{book}
@@ -614,8 +611,8 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                ("\\section{%s}" . "\\section*{%s}")
                ("\\subsection*{%s}" . "\\subsection*{%s}")
                ("\\subsubsection*{%s}" . "\\subsubsection*{%s}")))
-;;;;;;  Book with unnumbered chapters (book-nonumbers)
- (add-to-list 'org-latex-classes
+
+(add-to-list 'org-latex-classes
                '("book-nonumbers"
                  "\\documentclass{book}
 \\usepackage{unnumberedtotoc}"
@@ -630,7 +627,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
    ("\\section{%s}" . "\\section*{%s}")
    ("\\subsection*{%s}" . "\\subsection*{%s}")
    ("\\subsubsection*{%s}" . "\\subsubsection*{%s}")))
-;;;;;;  Unnumbered book with parts
+
 (add-to-list 'org-latex-classes
                '("book-withparts-nonumbers"
                  "\\documentclass{book}
@@ -641,8 +638,8 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                  ("\\subsection*{%s}" . "\\subsection*{%s}")
                  ("\\subsubsection*{%s}" . "\\subsubsection*{%s}")
                  ("\\paragraph*{%s}" . "\\paragraph*{%s}")))
-;;;;;;  Single chapter with no numbers (chapter-nonumbers)
-  (add-to-list 'org-latex-classes
+
+(add-to-list 'org-latex-classes
                '("chapter-nonumbers"
                  "\\documentclass{book}
 \\usepackage{unnumberedtotoc}"
@@ -652,22 +649,20 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                  ("\\paragraph{%s}" . "\\paragraph*{%s}")
                  ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
-
-;;;;;;  Beamer
 (add-to-list 'org-latex-classes
              '("beamer"
                "\\documentclass\{beamer\}"
                ("\\section\{%s\}" . "\\section*\{%s\}")
                ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
                ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
-;;;;;;  Beamer Handout
+
 (add-to-list 'org-latex-classes
              '("beamer-handout"
                "\\documentclass\[handout\]\{beamer\}"
                ("\\section\{%s\}" . "\\section*\{%s\}")
                ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
                ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
-;;;;;;  Uggedal-Thesis
+
 (add-to-list 'org-latex-classes
              '("Uggedal-Thesis"
                "\\documentclass[openany, 11pt]{uiothesis}
@@ -692,7 +687,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                ("\\subsection{%s}" . "\\subsection*{%s}")
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph{%s}")))
-;;;;;;  Uggedal-Thesis2
+
 (add-to-list 'org-latex-classes
              '("Uggedal-Thesis2"
                "\\documentclass[openany, 11pt]{uiothesis}
@@ -716,7 +711,6 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                ("\\subsection{%s}" . "\\subsection*{%s}")
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph{%s}")))
-;;;;;;  Uggedal-Thesis3
 
 (add-to-list 'org-latex-classes
              '("Uggedal-Thesis3"
@@ -740,7 +734,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph{%s}")))
                                         ; -Thesis
-;;;;;;  Thesis
+
 (add-to-list 'org-latex-classes
              '("Thesis2"
                "\\documentclass[12pt,twoside,openright]{memoir}
@@ -813,7 +807,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                ("\\section{%s}" . "\\section*{%s}")
                ("\\subsection{%s}" . "\\subsection*{%s}")
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
-;;;;;;  ThesisChapters
+
 (add-to-list 'org-latex-classes
              '("Thesischapters"
                "\\usepackage{layouts}[2001/04/29]
@@ -882,7 +876,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                ("\\section{%s}" . "\\section*{%s}")
                ("\\subsection{%s}" . "\\subsection*{%s}")
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
-;;;;;;  IEEE
+
 (add-to-list 'org-latex-classes
              '("IEEE"
                "\\documentclass{IEEEtran}
@@ -892,8 +886,8 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-;;;;;;  Article
- (add-to-list 'org-latex-classes
+
+(add-to-list 'org-latex-classes
              '("article"
                "\\documentclass{article}
 \\usepackage[notes, backend=biber, natbib, bibencoding=inputenc, url=false, doi=false, isbn=false]{biblatex-chicago}
@@ -905,7 +899,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-;;;;;;  Memoir Article
+
 (add-to-list 'org-latex-classes
              '("Memoir-Article"
                "\\documentclass[12pt,twoside,article]{memoir}
@@ -978,7 +972,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
 
 (setq org-latex-src-block-backend 'listings)
-;;;;;;  Org Article
+
 (add-to-list 'org-latex-classes
              '("org-article"
                "\\documentclass{org-article}
@@ -990,7 +984,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-;;;;;;  Philosophers Imprint
+
 (add-to-list 'org-latex-classes
              '("philosophersimprint"
                "\\documentclass[noflushend]{philosophersimprint}
@@ -1010,8 +1004,8 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
 
 )
 
-;;;; DONE Bibliography
-;;;;; Reftex
+
+
 (use-package! pretty-speedbar)
 (setq sr-speedbar-right-side nil)
 (use-package! reftex
@@ -1019,7 +1013,6 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
   :config
 (setq reftex-default-bibliography '("~/Dropbox/bib/My-Library.bib")))
 (setq bibtex-completion-bibliography '("~/Dropbox/bib/My-Library.bib"))
-;;;;; Org-reg
 
 (use-package! org-ref
   :after org
@@ -1054,9 +1047,7 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
        )
 )
 
-
-;;;; file register
-  (set-register ?j (cons 'file "~/Dropbox/Personal/Journals/Journal.org"))
+(set-register ?j (cons 'file "~/Dropbox/Personal/Journals/Journal.org"))
   (set-register ?c (cons 'file "~/Dropbox/Writing Projects/Buddhistmoralphil.org"))
   (set-register ?b (cons 'file "~/Dropbox/Personal/Journals/Buddhism.Spirituality.org"))
   (set-register ?r (cons 'file "~/Dropbox/Writing Projects/Property Project/101_A_reasonable_pluralism.org"))
@@ -1070,20 +1061,21 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
   (set-register ?t (cons 'file "~/Dropbox/Agendas/Personal.org"))
 (set-register ?n (cons 'file "~/Dropbox/org/notes.org"))
   (set-register ?w (cons 'file "~/Dropbox/Writing Projects/Essay-Ideas.org"))
-;;;; Custom functions
-;;;;; Org-ref <==> Pandoc
-  (defun avery-org-ref-to-pandoc ()
-    (interactive)
-    (if (re-search-forward "\\[\\[MCS:\\(\\(autocites\\)\\|\\(parencites\\)\\)\\]\\[\\((\\|\\*\\)\\]\\]\\[\\[MC:\\(.*?\\)\\(\\]\\[\\)" nil 1)
-        (let ((key (match-string-no-properties 5)) replacement)
-          (if (match-string 2)
-              (setq replacement (concat "[[ACTs:" key "][("))
-            (setq replacement (concat "[[PSCs:" key "][(")))
-          (let ((orig (match-string-no-properties 0)))
-            (if (y-or-n-p (concat "Replace " orig "with " replacement "? "))
-                (replace-match replacement))))))
-;;;; Insert quote
-  (defun current-line-empty-p ()
+
+
+
+(defun avery-org-ref-to-pandoc ()
+  (interactive)
+  (if (re-search-forward "\\[\\[MCS:\\(\\(autocites\\)\\|\\(parencites\\)\\)\\]\\[\\((\\|\\*\\)\\]\\]\\[\\[MC:\\(.*?\\)\\(\\]\\[\\)" nil 1)
+      (let ((key (match-string-no-properties 5)) replacement)
+        (if (match-string 2)
+            (setq replacement (concat "[[ACTs:" key "][("))
+          (setq replacement (concat "[[PSCs:" key "][(")))
+        (let ((orig (match-string-no-properties 0)))
+          (if (y-or-n-p (concat "Replace " orig "with " replacement "? "))
+              (replace-match replacement))))))
+
+(defun current-line-empty-p ()
     (save-excursion
       (beginning-of-line)
       (looking-at "[[:space:]]*$")))
@@ -1192,14 +1184,12 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
   ;; (spacemacs/set-leader-keys-for-major-mode 'org-mode "iq" 'avery-insert-quote)
   ;; (spacemacs/set-leader-keys-for-major-mode 'org-mode "ir" 'avery-insert-short-quote)
   ;; (spacemacs/set-leader-keys-for-major-mode 'org-mode "iu" 'avery-insert-quote-simple)
-;;;; agenda files
 
 (setq org-agenda-files
          '("~/Dropbox/Personal/2022-2023/"
          "~/Dropbox/Resources/dotfiles/.doom.d/"
          "~/Dropbox/Essays/Without/org/"))
 
-;;;; org-toc
 (use-package! toc-org
   :commands (toc-org-insert-toc toc-org-mode)
   :after (any: org markdown-mode)
