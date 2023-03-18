@@ -64,6 +64,8 @@
 ;; When using org-roam via the `+roam` flag
 (unpin! org-roam)
 ;;;; word count
+(package! wc-mode
+  :recipe (:host github :repo "bnbeckwith/wc-mode"))
 (package! org-wc
   :recipe (:host github :repo "tesujimath/org-wc"))
 ;; toc support

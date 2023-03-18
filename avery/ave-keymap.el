@@ -31,10 +31,16 @@
  "j" #'evil-join
  )
 (map!
- :after evil-org
+ :nvi "C-M-RET" #'avery-insert-heading
+ )
+(map!
  :nvi "C-M-RET" #'avery-insert-heading
  :leader
  "ic" #'avery-insert-heading-and-clock
  "ih" #'avery-insert-heading-and-append
- )
+ "ii" #'avery-clock-in
+ "im" #'my-start-morningwrite
+ "ip" #'my-start-writing-pomodoro
+ "iq" #'my-start-quickwrite
+ "io" #'my-clock-out)
 (provide 'ave-keymap)

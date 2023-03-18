@@ -145,6 +145,16 @@ filling the current element."
                       )
   (defvar avery_writinglog nil)
   (defvar pomodoro-buffer nil)
+(defun my-start-20 ()
+    (interactive)
+    (my-clock-in)
+    (run-with-timer
+     1200 nil 'my-clock-out))
+(defun my-start-morningwrite ()
+    (interactive)
+    (my-clock-in)
+    (run-with-timer
+     1800 nil 'my-clock-out))
 (defun my-start-quickwrite ()
     (interactive)
     (my-clock-in)
@@ -185,7 +195,8 @@ filling the current element."
              (duration (replace-regexp-in-string " " "" (org-timer nil t))))
         (shell-command (format "notify-send   \"%s\" \"Take a break! you have added %s words in %s\" " time added-w duration))
         (shell-command (format "echo %s, %s, %s, %s >> %s" time2 duration added-w buffer-or-file avery_writinglog))
-        (org-clock-out))))
+        (org-clock-out)
+        (setq orig-wc nil))))
   (setq notify-method 'notify-via-message)
   (defun my-clock-in-hook ()
     (interactive)
@@ -193,6 +204,16 @@ filling the current element."
     (with-current-buffer (org-clocking-buffer)
       (setq orig-wc (count-words (point-min) (point-max)))
       (org-timer-start)))
+
+  (defun avery-clock-in()
+    (interactive)
+    (if orig-wc
+        (unless (equal (current-buffer) (org-clocking-buffer))
+          (my-clock-out)))
+    (if orig-wc
+        (org-clock-in)
+      (my-clock-in))
+    )
 
   (defun my-clock-in()
     (interactive)

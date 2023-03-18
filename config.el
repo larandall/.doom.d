@@ -3,7 +3,7 @@
 ;; sync' after modifying this file!
 (use-package server
   :defer 1
-:config (unless server-process (server-start)))
+  :config (unless server-process (server-start)))
 (defvar conf-dir (expand-file-name "~/.dotfiles")
   "Where I put my config files")
 (setq conf-dir (expand-file-name "~/Dropbox/Resources/dotfiles/.doom.d/"))
@@ -11,8 +11,10 @@
 (use-package! ave-keymap)
 (use-package! langtool
   :init
-  (setq langtool-language-tool-jar (if (string= system-type "gnu/linux")
-"/usr/share/java/languagetool/languagetool.jar"                                       "/usr/local/Cellar/languagetool/5.9/libexec/languagetool-commandline.jar" )))
+  (setq langtool-language-tool-jar
+        (if (string= system-type "gnu/linux")
+            "/usr/share/java/languagetool/languagetool.jar"
+          "/usr/local/Cellar/languagetool/5.9/libexec/languagetool-commandline.jar" )))
 
 ;; (defun wrap-obsolete (orig-fn &rest args)
 ;;   (let ((args_ (if (= (length args) 2)
@@ -41,29 +43,29 @@
                                        "Triplicate A"
                                      "Triplicate A")
                            :size
-                                     (if (and
-                                          (> (display-pixel-width) 1921)
-                                          (> (display-pixel-height) 1081))
-                                         (if (string= system-type "gnu/linux")
-                                           ;; (string= system-name "avery-imac")
-                                             24
-                                         13)
-                                       14)
+                           (if (and
+                                (> (display-pixel-width) 1921)
+                                (> (display-pixel-height) 1081))
+                               (if (string= system-type "gnu/linux")
+                                   ;; (string= system-name "avery-imac")
+                                   24
+                                 13)
+                             13)
                            ))
 
 (setq doom-variable-pitch-font (font-spec :family (if (string= system-type "gnu/linux")
                                                       "Triplicate A"
                                                     "Triplicate A")
-                           :size
-                                     (if (and
-                                          (> (display-pixel-width) 1921)
-                                          (> (display-pixel-height) 1081))
-                                         (if (string= system-type "gnu/linux")
-                                           ;; (string= system-name "avery-imac")
-                                             24
-                                         13)
-                                       14)
-                           ))
+                                          :size
+                                          (if (and
+                                               (> (display-pixel-width) 1921)
+                                               (> (display-pixel-height) 1081))
+                                              (if (string= system-type "gnu/linux")
+                                                  ;; (string= system-name "avery-imac")
+                                                  24
+                                                13)
+                                            14)
+                                          ))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -240,7 +242,7 @@
 (display-time-mode 1)
 (use-package! doom-modeline
   :init
-  (setq doom-modeline-enable-word-count nil))
+  (setq doom-modeline-enable-word-count t))
 ;; (display-battery-mode -1)
 
 (use-package! smtpmail
@@ -392,6 +394,10 @@
                '("d" "Day Sheet" entry (file+datetree "~/Dropbox/Professional/GMD/Day-Sheets.org")
                  "* Day Sheet %<%A %m/%d/%Y> :ignore:\n:PROPERTIES:\n:EXPORT_FILE_NAME: Sheets/%<%m-%d-%Y>\n:END:
 Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site:\n\nNotes:" :jump-to-captured nil))
+
+(add-to-list 'org-capture-templates
+             '("m" "Morning Papers" entry (file+olp "~/Dropbox/Personal/2022-2023/Morning_papers.org" "Morning papers")
+               "* %<%Y.%m.%d %T> :morning:\n:PROPERTIES:\n:EXPORT_FILE_NAME: morning_papers/%<%Y_%m_%d>\n:END:\n\n%?" :jump-to-captured t :empty-lines 1))
 
 (add-to-list 'org-capture-templates
              '("l" "letter" entry (file+datetree "~/Dropbox/org/Letters.org")
@@ -1188,7 +1194,8 @@ Avery %<%A %m/%d/%Y> %^{First PO}%?\n\n%\\1: \n\nGMD on Site:\n\nNon-GMD on Site
 (setq org-agenda-files
          '("~/Dropbox/Personal/2022-2023/"
          "~/Dropbox/Resources/dotfiles/.doom.d/"
-         "~/Dropbox/Essays/Without/org/"))
+         "~/Dropbox/Essays/Some_things_I_believed_when_I_was_young/org/"
+         "~/Dropbox/Essays/Without_things/org/"))
 
 (use-package! toc-org
   :commands (toc-org-insert-toc toc-org-mode)

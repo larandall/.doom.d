@@ -13,18 +13,38 @@
   ;; (add-to-list 'org-agenda-files "~/Dropbox/Essays/Toward_a_principled_pluralism/")
   )
 (after! org
-  (add-to-list 'org-todo-keywords '(sequence
-                                    "NOTE(n)"
-                                    "|"
-                                    "NOTED(N)"))
-  (add-to-list 'org-todo-keywords '(sequence
-                                    "TOREAD(r)"
-                                    "READNG(g)"
-                                    "ANNOTT(G)"
-                                    "|"
-                                    "READ(R)"))
-  (add-to-list 'org-todo-keyword-faces '("READNG" . +org-todo-active))
- (add-to-list 'org-todo-keyword-faces '("ANNOTT" . +org-todo-active))
+(setq org-todo-keywords '((sequence
+           "[_](t)"   ; A task that needs doing
+           "[-](s)"   ; Task is in progress
+           "|"
+           "[X](d)")  ; Task was completed
+        (sequence
+           "[I](i)"  ; An unconfirmed and unapproved task or notion
+           "[P](p)"  ; A project, which usually contains other tasks
+           "[W](w)"  ; Something external is holding up this task
+           "[H](h)"  ; This task is paused/on hold because of me
+            "|"
+           "[K](k)") ; Task was cancelled, aborted or is no longer applicable
+          (sequence
+           "[R](r)"
+           "[E](e)"
+           "[A](a)"
+           "|"
+           "[D](D)")
+          (sequence
+           "|"
+           "[O](o)"
+           "[Y](y)"
+           "[N](n)"))
+        org-todo-keyword-faces
+        '(("[-]"  . +org-todo-active)
+          ("[E]"  . +org-todo-active)
+          ("[A]"  . +org-todo-active)
+          ("[H]"  . +org-todo-onhold)
+          ("[W]" . +org-todo-onhold)
+          ("[P]" . +org-todo-project)
+          ("[N]"   . +org-todo-cancel)
+          ("[K]" . +org-todo-cancel)))
   )
 
 (after! org
@@ -53,10 +73,10 @@
   (if (string-equal system-type "gnu/linux")
     (setq org-file-apps
           '(("\\.mm\\'" . default)
-            ("\\.x?html?\\'" . "firefox %s")
+            ("\\.x?html?\\'" . default)
             ("\\.pdf\\'" . default)
             ("\\.odt\\'" . "/usr/bin/libreoffice %s")
-            (auto-mode . emacs)
+            (auto-emacs . mode)
             ))))
 (use-package! org-checklist
   :after org)
@@ -79,16 +99,14 @@
 (defun avery-insert-heading-and-clock ()
   (interactive)
   (org-insert-heading)
-  (if (org-clocking-p)
-      (org-clock-in)
-    (my-clock-in))
+  (avery-clock-in)
   (evil-org-append-line 1))
 
 (defun avery-insert-heading-and-append ()
   (interactive)
   (org-insert-heading)
-  (if (org-clocking-p)
-      (org-clock-in))
+  (if orig-wc
+      (avery-clock-in))
   (evil-org-append-line 1))
 
 (defun avery-insert-heading ()
