@@ -578,6 +578,9 @@
 #+end_src
 
 *** Day Sheet
+:PROPERTIES:
+:ID:       6d5b82fe-9259-4eef-8c68-fd57cd39491f
+:END:
 
 #+begin_src emacs-lisp :tangle config.el
   (add-to-list 'org-capture-templates

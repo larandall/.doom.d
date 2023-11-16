@@ -88,6 +88,7 @@
   :init
   (setq org-wc-default-link-count 'oneword))
 
+  (setq org-id-link-to-org-use-id t)
 ;;;;; DONE Org-Inlinetask
 (use-package! org-inlinetask
   :after org
